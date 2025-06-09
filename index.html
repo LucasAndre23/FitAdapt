@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Open+Sans:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <title>FitAdapt - Fitness Inclusivo</title>
+
+    <!-- INÍCIO DA INTEGRAÇÃO FIREBASE -->
+    <script type="module">
+        // Importa os módulos necessários do Firebase
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js';
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js';
+        import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js';
+
+        // Sua configuração do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCn-qbqXscs8x9DhZbFQQc_m4-X_ji4jvg",
+            authDomain: "fitadapt-4a71a.firebaseapp.com",
+            projectId: "fitadapt-4a71a",
+            storageBucket: "fitadapt-4a71a.firebasestorage.app",
+            messagingSenderId: "525068610805",
+            appId: "1:525068610805:web:3e4d3526a93c602ec4e9bc",
+            measurementId: "G-96J6RKBQY3"
+        };
+
+        // Inicializa o Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Verifica o estado de autenticação ao carregar a página
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                // Se o usuário está logado, verifica se ele já preencheu o questionário
+                const userQuestionnaireRef = doc(db, "user_questionnaires", user.uid);
+                const userQuestionnaireSnap = await getDoc(userQuestionnaireRef);
+
+                if (!userQuestionnaireSnap.exists()) {
+                    // Se o questionário NÃO está preenchido, redireciona para a página do questionário
+                    window.location.href = 'questionario.html';
+                }
+                // Se o questionário JÁ está preenchido, NÃO FAZ NADA AQUI.
+                // Isso permite que o usuário logado permaneça na página inicial (index.html)
+                // se ele navegou para cá (por exemplo, clicando no logo).
+            }
+            // Se não estiver logado, permanece na página inicial para login/registro
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Lógica para os botões "Assinar agora" e o link "Login/Criar Conta" na navegação
+            const loginLinks = document.querySelectorAll('a[href="registro.html"]');
+            loginLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    // Não precisa de e.preventDefault() aqui, pois o href já é um link direto
+                    // para registro.html. A lógica de redirecionamento no onAuthStateChanged
+                    // em registro.html cuidará de levar para a área logada se já estiver autenticado.
+                });
+            });
+
+            // Lógica para o formulário de login na própria página inicial (se ainda existir)
+            const loginForm = document.querySelector('.login-form');
+            if (loginForm) {
+                loginForm.addEventListener('submit', async (e) => {
+                    e.preventDefault(); // Impede o recarregamento da página
+
+                    const email = loginForm.querySelector('input[type="email"]').value;
+                    const password = loginForm.querySelector('input[type="password"]').value;
+
+                    try {
+                        await signInWithEmailAndPassword(auth, email, password);
+                        // Após o login bem-sucedido, force o recarregamento da página.
+                        // O onAuthStateChanged será re-executado e, como o questionário estará preenchido,
+                        // o usuário não será redirecionado, podendo navegar na index.html.
+                        window.location.reload(); 
+                    } catch (error) {
+                        alert(`Erro ao fazer login: ${error.message}`);
+                        console.error('Erro de login:', error);
+                    }
+                });
+            }
+        });
+    </script>
+    <!-- FIM DA INTEGRAÇÃO FIREBASE -->
+</head>
+
+<body>
+    <!-- Cabeçalho principal do site -->
+    <header>
+        <div class="logo">FitAdapt</div>
+        <div class="slogan">Fitness personalizado para todos</div>
+    </header>
+
+    <!-- Navegação do site -->
+    <nav>
+        <ul>
+            <li><a href="#home">Início</a></li>
+            <li><a href="#features">Funcionalidades</a></li>
+            <li><a href="registro.html">Login/Criar Conta</a></li> <!-- Link direto para registro.html -->
+            <li><a href="#contact">Contato</a></li>
+        </ul>
+    </nav>
+
+    <!-- Seção Hero (banner principal) -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <h1>Treinos adaptados para suas necessidades</h1>
+            <p>O FitAdapt oferece exercícios personalizados para pessoas com diferentes condições físicas, idades ou necessidades especiais. Conectamos você a profissionais e criamos rotinas seguras e eficazes.</p>
+            <a href="#features" class="cta-button">Comece Agora</a>
+        </div>
+    </section>
+
+    <!-- Seção de Funcionalidades -->
+    <section class="features" id="features">
+        <h2>Nossas Funcionalidades</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <h3>Questionário Inicial</h3>
+                <p>Entendemos suas limitações físicas, nível de condicionamento e objetivos para criar um plano perfeito.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Treinos Guiados</h3>
+                <p>Vídeos e instruções detalhadas adaptadas ao seu perfil e evolução.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Progresso Personalizado</h3>
+                <p>Relatórios e feedback para acompanhar seus resultados de forma motivadora.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Dicas de Bem-Estar</h3>
+                <p>Conteúdos exclusivos sobre nutrição, saúde mental e cuidados físicos.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Seção de Planos de Preço -->
+    <section class="pricing-section" id="planos">
+        <div class="pricing-container">
+            <h2>Nossos Planos</h2>
+            <p class="subtitle">Escolha o que melhor se adapta à sua rotina</p>
+            
+            <div class="pricing-grid">
+                <!-- Card do Plano Mensal -->
+                <div class="pricing-card">
+                    <h3>Mensal</h3>
+                    <div class="price">R$ 70<span>/mês</span></div>
+                    <ul class="features-list">
+                        <li>✔ Acesso a todos os treinos</li>
+                        <li>✔ Atualização mensal do plano</li>
+                        <li>✔ Suporte por e-mail</li>
+                        <li>✔ 1 consultoria online</li>
+                    </ul>
+                    <a href="registro.html" class="cta-button">Assinar agora</a> <!-- Redireciona para registro.html -->
+                </div>
+                
+                <!-- Card do Plano Trimestral (Destaque) -->
+                <div class="pricing-card highlight">
+                    <div class="popular-badge">Mais popular</div>
+                    <h3>Trimestral</h3>
+                    <div class="price">R$ 180<span>/trimestre</span></div>
+                    <div class="economy">Economize R$ 30</div>
+                    <ul class="features-list">
+                        <li>✔ Todos os benefícios do mensal</li>
+                        <li>✔ Atualização quinzenal</li>
+                        <li>✔ Suporte prioritário</li>
+                        <li>✔ 3 consultorias online</li>
+                    </ul>
+                    <a href="registro.html" class="cta-button">Assinar agora</a> <!-- Redireciona para registro.html -->
+                </div>
+                
+                <!-- Card do Plano Anual -->
+                <div class="pricing-card">
+                    <h3>Anual</h3>
+                    <div class="price">R$ 750<span>/ano</span></div>
+                    <div class="economy">Economize R$ 90</div>
+                    <ul class="features-list">
+                        <li>✔ Todos os benefícios do trimestral</li>
+                        <li>✔ Atualização semanal</li>
+                        <li>✔ Suporte 24/7</li>
+                        <li>✔ 12 consultorias online</li>
+                        <li>✔ Acesso a conteúdos exclusivos</li>
+                    </ul>
+                    <a href="registro.html" class="cta-button">Assinar agora</a> <!-- Redireciona para registro.html -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Rodapé da página -->
+    <footer id="contact">
+        <p>© 2023 FitAdapt - Todos os direitos reservados</p>
+        <p>contato@fitadapt.com.br | (55) 83 9999-9999 </p>
+    </footer>
+</body>
+</html>
