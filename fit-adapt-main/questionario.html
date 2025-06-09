@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitAdapt - Seu Questionário</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Open+Sans:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Cabeçalho Simples -->
+    <header class="user-header">
+        <a href="index.html" class="logo">FitAdapt</a>
+    </header>
+
+    <!-- Seção do Questionário Adaptativo -->
+    <section class="questionario-section" id="questionario">
+        <div class="questionario-container">
+            <h2>Seu Questionário de Adaptação</h2>
+            <p class="subtitle">Precisamos de algumas informações para personalizar seu plano.</p>
+            <form class="questionario-form">
+                <div class="form-group">
+                    <label>Qual seu principal objetivo?</label>
+                    <select id="objetivo-select" required>
+                        <option value="">Selecione...</option>
+                        <option>Melhorar mobilidade</option>
+                        <option>Alívio de dores</option>
+                        <option>Condicionamento físico</option>
+                        <option>Reabilitação pós-lesão</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Possui alguma limitação física?</label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="limitacao" value="sim"> Sim</label>
+                        <label><input type="radio" name="limitacao" value="nao" checked> Não</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Descreva brevemente suas necessidades:</label>
+                    <textarea id="necessidades-textarea" rows="4" placeholder="Ex.: Artrose no joelho direito, hérnia de disco..."></textarea>
+                </div>
+                
+                <div class="agendamento-container">
+                    <h3>Agendamento com Especialista</h3>
+                    <p>Deseja marcar uma avaliação presencial gratuita com nosso especialista?</p>
+                    
+                    <div class="radio-group">
+                        <label><input type="radio" name="agendamento" value="sim" id="agendamento-sim"> Sim, quero agendar</label>
+                        <label><input type="radio" name="agendamento" value="nao" checked id="agendamento-nao"> Não, por enquanto</label>
+                    </div>
+                    
+                    <div id="agendamento-fields" class="hidden">
+                        <div class="form-group">
+                            <label>Data preferencial:</label>
+                            <input type="date" id="data-consulta" class="agendamento-field" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Horário preferencial:</label>
+                            <select id="horario-consulta" class="agendamento-field" required>
+                                <option value="">Selecione...</option>
+                                <option>08:00 - 10:00</option>
+                                <option>10:00 - 12:00</option>
+                                <option>14:00 - 16:00</option>
+                                <option>16:00 - 18:00</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Local mais próximo:</label>
+                            <select id="local-consulta" class="agendamento-field" required>
+                                <option value="">Selecione...</option>
+                                <option>João Pessoa - PB</option>
+                                <option>Rio de Janeiro - RJ</option>
+                                <option>Belo Horizonte - MG</option>
+                                <option>Porto Alegre - RS</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="cta-button">Gerar Meu Plano</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Rodapé -->
+    <footer>
+        <p>© 2023 FitAdapt - Todos os direitos reservados</p>
+        <p>contato@fitadapt.com.br | (55) 83 9999-9999 </p>
+    </footer>
+
+    <!-- Firebase Scripts para o Questionário -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js';
+        import { getFirestore, doc, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js';
+
+        // Sua configuração do Firebase (COLE AQUI O QUE VOCÊ COPIOU DO CONSOLE DO FIREBASE)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCn-qbqXscs8x9DhZbFQQc_m4-X_ji4jvg",
+            authDomain: "fitadapt-4a71a.firebaseapp.com",
+            projectId: "fitadapt-4a71a",
+            storageBucket: "fitadapt-4a71a.firebasestorage.app",
+            messagingSenderId: "525068610805",
+            appId: "1:525068610805:web:3e4d3526a93c602ec4e9bc",
+            measurementId: "G-96J6RKBQY3"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Verifica o estado de autenticação e redireciona se o questionário já foi preenchido
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const userQuestionnaireRef = doc(db, "user_questionnaires", user.uid);
+                const userQuestionnaireSnap = await getDoc(userQuestionnaireRef);
+
+                if (userQuestionnaireSnap.exists()) {
+                    // Questionário já preenchido, redireciona para a área logada
+                    window.location.href = 'arealogad.html';
+                }
+                // Se não existe, permanece nesta página para preencher
+            } else {
+                // Se não há usuário logado, redireciona para a página de login
+                window.location.href = 'index.html#login';
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Lógica para mostrar/ocultar campos de agendamento
+            const agendamentoSimRadio = document.getElementById('agendamento-sim');
+            const agendamentoNaoRadio = document.getElementById('agendamento-nao');
+            const agendamentoFieldsDiv = document.getElementById('agendamento-fields');
+            const agendamentoFieldsInputs = agendamentoFieldsDiv.querySelectorAll('.agendamento-field');
+
+            function toggleAgendamentoVisibility() {
+                if (agendamentoSimRadio.checked) {
+                    agendamentoFieldsDiv.classList.remove('hidden');
+                    agendamentoFieldsInputs.forEach(input => input.required = true);
+                } else {
+                    agendamentoFieldsDiv.classList.add('hidden');
+                    agendamentoFieldsInputs.forEach(input => input.required = false);
+                }
+            }
+            toggleAgendamentoVisibility(); // Garante o estado inicial
+            agendamentoSimRadio.addEventListener('change', toggleAgendamentoVisibility);
+            agendamentoNaoRadio.addEventListener('change', toggleAgendamentoVisibility);
+
+            // Define data mínima como amanhã
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const dataConsultaInput = document.getElementById('data-consulta');
+            if (dataConsultaInput) {
+                dataConsultaInput.min = tomorrow.toISOString().split('T')[0];
+            }
+
+            // Lógica de Submissão do Questionário e Salvamento no Firestore
+            const questionarioForm = document.querySelector('.questionario-form');
+            if (questionarioForm) {
+                questionarioForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+
+                    const user = auth.currentUser;
+                    if (!user) {
+                        alert('Erro: Usuário não logado. Redirecionando para login.');
+                        window.location.href = 'index.html#login';
+                        return;
+                    }
+
+                    const questionarioData = {
+                        objetivo: document.getElementById('objetivo-select').value,
+                        limitacao: questionarioForm.querySelector('input[name="limitacao"]:checked').value,
+                        necessidades: document.getElementById('necessidades-textarea').value,
+                        agendamento: agendamentoSimRadio.checked ? {
+                            data: document.getElementById('data-consulta').value,
+                            horario: document.getElementById('horario-consulta').value,
+                            local: document.getElementById('local-consulta').value
+                        } : null,
+                        timestamp: new Date().toISOString()
+                    };
+
+                    try {
+                        await setDoc(doc(db, "user_questionnaires", user.uid), questionarioData);
+                        alert('Questionário enviado e salvo com sucesso! Redirecionando para seu plano...');
+                        window.location.href = 'arealogad.html'; // Redireciona para a área logada após salvar
+                    } catch (error) {
+                        alert(`Erro ao salvar questionário: ${error.message}`);
+                        console.error('Erro ao salvar questionário:', error);
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
