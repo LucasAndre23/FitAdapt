@@ -9,59 +9,72 @@
     <link rel="stylesheet" href="style.css">
     <title>FitAdapt - Fitness Inclusivo</title>
 
+    <!-- INÍCIO DA INTEGRAÇÃO FIREBASE -->
     <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js';
-        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js';
-        import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js';
+        // Importa as instâncias do Firebase do arquivo compartilhado
+        import { auth, db } from './firebase-init.js';
+        // Importa módulos Firebase específicos necessários para esta página
+        import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js'; 
+        import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js';
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyCn-qbqXscs8x9DhZbFQQc_m4-X_ji4jvg",
-            authDomain: "fitadapt-4a71a.firebaseapp.com",
-            projectId: "fitadapt-4a71a",
-            storageBucket: "fitadapt-4a71a.firebasestorage.app",
-            messagingSenderId: "525068610805",
-            appId: "1:525068610805:web:3e4d3526a93c602ec4e9bc",
-            measurementId: "G-96J6RKBQY3"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
+        // Verifica o estado de autenticação ao carregar a página
         onAuthStateChanged(auth, async (user) => {
             if (user) {
+                // Se o usuário está logado, verifica se ele já preencheu o questionário
                 const userQuestionnaireRef = doc(db, "user_questionnaires", user.uid);
                 const userQuestionnaireSnap = await getDoc(userQuestionnaireRef);
 
                 if (!userQuestionnaireSnap.exists()) {
+                    // Se o questionário NÃO está preenchido, redireciona para a página do questionário
                     window.location.href = 'questionario.html';
                 }
+                
             }
+            // Se não estiver logado, permanece na página inicial para login/registro
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Lógica para os botões "Assinar agora" e o link "Login/Criar Conta" na navegação
+            const loginLinks = document.querySelectorAll('a[href="registro.html"]');
+            loginLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    // Não precisa de e.preventDefault() aqui, pois o href já é um link direto
+                    // para registro.html. A lógica de redirecionamento no onAuthStateChanged
+                    // em registro.html cuidará de levar para a área logada se já estiver autenticado.
+                });
+            });
         });
     </script>
+    <!-- FIM DA INTEGRAÇÃO FIREBASE -->
 </head>
 
 <body>
+    <!-- Cabeçalho principal do site -->
     <header>
         <div class="logo">FitAdapt</div>
         <div class="slogan">Fitness personalizado para todos</div>
     </header>
 
+    <!-- Navegação do site -->
     <nav>
         <ul>
             <li><a href="#home">Início</a></li>
             <li><a href="#features">Funcionalidades</a></li>
-            <li><a href="login.html">Entrar</a></li> <li><a href="#contact">Contato</a></li>
+            <li><a href="login.html">Entrar</a></li>
+            <li><a href="#contact">Contato</a></li>
         </ul>
     </nav>
 
+    <!-- Seção Hero (banner principal) -->
     <section class="hero" id="home">
         <div class="hero-content">
             <h1>Treinos adaptados para suas necessidades</h1>
             <p>O FitAdapt oferece exercícios personalizados para pessoas com diferentes condições físicas, idades ou necessidades especiais. Conectamos você a profissionais e criamos rotinas seguras e eficazes.</p>
-            <a href="registro.html" class="cta-button">Comece Agora</a> </div>
+            <a href="registro.html" class="cta-button">Comece Agora</a>
+        </div>
     </section>
 
+    <!-- Seção de Funcionalidades -->
     <section class="features" id="features">
         <h2>Nossas Funcionalidades</h2>
         <div class="features-grid">
@@ -84,12 +97,14 @@
         </div>
     </section>
 
+    <!-- Seção de Planos de Preço -->
     <section class="pricing-section" id="planos">
         <div class="pricing-container">
             <h2>Nossos Planos</h2>
             <p class="subtitle">Escolha o que melhor se adapta à sua rotina</p>
             
             <div class="pricing-grid">
+                <!-- Card do Plano Mensal -->
                 <div class="pricing-card">
                     <h3>Mensal</h3>
                     <div class="price">R$ 70<span>/mês</span></div>
@@ -99,9 +114,10 @@
                         <li>✔ Suporte por e-mail</li>
                         <li>✔ 1 consultoria online</li>
                     </ul>
-                    <a href="registro.html" class="cta-button">Assinar agora</a>
+                    <a href="registro.html" class="cta-button">Assinar agora</a> <!-- Redireciona para registro.html -->
                 </div>
                 
+                <!-- Card do Plano Trimestral (Destaque) -->
                 <div class="pricing-card highlight">
                     <div class="popular-badge">Mais popular</div>
                     <h3>Trimestral</h3>
@@ -113,9 +129,10 @@
                         <li>✔ Suporte prioritário</li>
                         <li>✔ 3 consultorias online</li>
                     </ul>
-                    <a href="registro.html" class="cta-button">Assinar agora</a>
+                    <a href="registro.html" class="cta-button">Assinar agora</a> <!-- Redireciona para registro.html -->
                 </div>
                 
+                <!-- Card do Plano Anual -->
                 <div class="pricing-card">
                     <h3>Anual</h3>
                     <div class="price">R$ 750<span>/ano</span></div>
@@ -127,12 +144,13 @@
                         <li>✔ 12 consultorias online</li>
                         <li>✔ Acesso a conteúdos exclusivos</li>
                     </ul>
-                    <a href="registro.html" class="cta-button">Assinar agora</a>
+                    <a href="registro.html" class="cta-button">Assinar agora</a> <!-- Redireciona para registro.html -->
                 </div>
             </div>
         </div>
     </section>
 
+    <!-- Rodapé da página -->
     <footer id="contact">
         <p>© 2023 FitAdapt - Todos os direitos reservados</p>
         <p>contato@fitadapt.com.br | (55) 83 9999-9999 </p>

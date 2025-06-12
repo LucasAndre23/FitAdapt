@@ -11,27 +11,13 @@
 
     <!-- INÍCIO DA INTEGRAÇÃO FIREBASE NA ÁREA LOGADA -->
     <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js';
-        import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js';
-        // Importa updateDoc para atualizar documentos no Firestore
-        import { getFirestore, doc, getDoc, updateDoc } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js';
+        // Importa as instâncias do Firebase do arquivo compartilhado
+        import { auth, db } from './firebase-init.js';
+        // Importa módulos Firebase específicos necessários para esta página
+        import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js'; 
+        import { doc, getDoc, updateDoc } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js';
 
-        // Sua configuração do Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyCn-qbqXscs8x9DhZbFQQc_m4-X_ji4jvg",
-            authDomain: "fitadapt-4a71a.firebaseapp.com",
-            projectId: "fitadapt-4a71a",
-            storageBucket: "fitadapt-4a71a.firebasestorage.app",
-            messagingSenderId: "525068610805",
-            appId: "1:525068610805:web:3e4d3526a93c602ec4e9bc",
-            measurementId: "G-96J6RKBQY3"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        // --- Estrutura de Dados para Planos de Treino (Você pode expandir isso!) ---
+        // --- Estrutura de Dados para Planos de Treino ---
         const workoutPlans = {
             'Melhorar mobilidade': [
                 {
@@ -221,7 +207,7 @@
                     const exerciseCard = document.createElement('div');
                     exerciseCard.classList.add('exercise-card');
                     // Cria um ID único para cada exercício baseado no título do vídeo
-                    // Isso é importante para marcar a conclusão no Firestore
+                    // para marcar a conclusão no Firestore
                     const exerciseId = exercise.videoUrl; // Usar a URL do vídeo como ID único por simplicidade
 
                     const isCompleted = completedExercisesSet.has(exerciseId);
@@ -262,7 +248,7 @@
 
             if (!currentUserUid) {
                 alert('Erro: Usuário não logado. Por favor, faça login novamente.');
-                window.location.href = 'index.html#login';
+                window.location.href = 'login.html';
                 return;
             }
 
@@ -314,7 +300,7 @@
                     window.location.href = 'questionario.html';
                 }
             } else {
-                window.location.href = 'registro.html';
+                window.location.href = 'login.html';
             }
         });
 

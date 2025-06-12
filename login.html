@@ -43,30 +43,11 @@
     </footer>
 
     <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js';
-        import { 
-            getAuth, 
-            signInWithEmailAndPassword, 
-            signInWithPopup, 
-            GoogleAuthProvider, 
-            onAuthStateChanged 
-        } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js';
-        import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js';
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyCn-qbqXscs8x9DhZbFQQc_m4-X_ji4jvg",
-            authDomain: "fitadapt-4a71a.firebaseapp.com",
-            projectId: "fitadapt-4a71a",
-            storageBucket: "fitadapt-4a71a.firebasestorage.app",
-            messagingSenderId: "525068610805",
-            appId: "1:525068610805:web:3e4d3526a93c602ec4e9bc",
-            measurementId: "G-96J6RKBQY3"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const googleProvider = new GoogleAuthProvider();
+        // Importa as instâncias do Firebase do arquivo compartilhado
+        import { auth, db, googleProvider } from './firebase-init.js';
+        // Importa módulos Firebase específicos necessários para esta página
+        import { onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js'; // CORRIGIDO: de firebase-auth.js
+        import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js';
 
         // Verifica o estado de autenticação ao carregar a página de login
         onAuthStateChanged(auth, async (user) => {
@@ -125,6 +106,6 @@
             }
         });
     </script>
-   
+    
 </body>
 </html>

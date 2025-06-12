@@ -97,24 +97,11 @@
 
     <!-- Firebase Scripts para o Questionário -->
     <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js';
-        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js';
-        import { getFirestore, doc, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js';
-
-        // Sua configuração do Firebase (COLE AQUI O QUE VOCÊ COPIOU DO CONSOLE DO FIREBASE)
-        const firebaseConfig = {
-            apiKey: "AIzaSyCn-qbqXscs8x9DhZbFQQc_m4-X_ji4jvg",
-            authDomain: "fitadapt-4a71a.firebaseapp.com",
-            projectId: "fitadapt-4a71a",
-            storageBucket: "fitadapt-4a71a.firebasestorage.app",
-            messagingSenderId: "525068610805",
-            appId: "1:525068610805:web:3e4d3526a93c602ec4e9bc",
-            measurementId: "G-96J6RKBQY3"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        // Importa as instâncias do Firebase do arquivo compartilhado
+        import { auth, db } from './firebase-init.js';
+        // Importa módulos Firebase específicos necessários para esta página
+        import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js'; // CORRIGIDO: de firebase-auth.js
+        import { doc, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js';
 
         // Verifica o estado de autenticação e redireciona se o questionário já foi preenchido
         onAuthStateChanged(auth, async (user) => {
@@ -129,7 +116,7 @@
                 // Se não existe, permanece nesta página para preencher
             } else {
                 // Se não há usuário logado, redireciona para a página de login
-                window.location.href = 'index.html#login';
+                window.location.href = 'login.html';
             }
         });
 
@@ -171,7 +158,7 @@
                     const user = auth.currentUser;
                     if (!user) {
                         alert('Erro: Usuário não logado. Redirecionando para login.');
-                        window.location.href = 'index.html#login';
+                        window.location.href = 'login.html';
                         return;
                     }
 

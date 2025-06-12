@@ -30,7 +30,7 @@
 
             <button id="google-signin-button" class="cta-button google-button">
                 <img src="https://img.icons8.com/color/16/000000/google-logo.png" alt="Google icon">
-                Entrar com Google
+                Registrar com Google
             </button>
 
             <p class="login-link" style="margin-top: 1.5rem;">Já tem uma conta? <a href="login.html">Faça Login</a></p>
@@ -43,52 +43,29 @@
     </footer>
 
     <script type="module">
-        // Importa os módulos necessários do Firebase
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js';
+        // Importa as instâncias do Firebase do arquivo compartilhado
+        import { auth, db, googleProvider } from './firebase-init.js';
+        // IMPORTANTE: Garanta que todas as funções de autenticação sejam importadas de 'firebase-auth.js'
         import { 
-            getAuth, 
             createUserWithEmailAndPassword, 
             signInWithPopup, 
-            GoogleAuthProvider, 
-            onAuthStateChanged 
-        } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js';
-        import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js';
+            onAuthStateChanged // onAuthStateChanged também vem do auth
+        } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js'; 
+        // Importa módulos Firestore específicos
+        import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js';
 
-        // Sua configuração do Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyCn-qbqXscs8x9DhZbFQQc_m4-X_ji4jvg",
-            authDomain: "fitadapt-4a71a.firebaseapp.com",
-            projectId: "fitadapt-4a71a",
-            storageBucket: "fitadapt-4a71a.firebasestorage.app",
-            messagingSenderId: "525068610805",
-            appId: "1:525068610805:web:3e4d3526a93c602ec4e9bc",
-            measurementId: "G-96J6RKBQY3"
-        };
-
-        // Inicializa o Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app); // Inicializa o Firestore
-        const googleProvider = new GoogleAuthProvider(); // Provedor de autenticação do Google
-
-        // Verifica o estado de autenticação ao carregar a página
-        // Isso garante que o usuário seja redirecionado corretamente após registro/login,
-        // dependendo se ele já preencheu o questionário ou não.
+        // Lógica de verificação de autenticação e redirecionamento
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                // Usuário logado. Agora verifica se ele já preencheu o questionário.
                 const userQuestionnaireRef = doc(db, "user_questionnaires", user.uid);
                 const userQuestionnaireSnap = await getDoc(userQuestionnaireRef);
 
                 if (userQuestionnaireSnap.exists()) {
-                    // Questionário já preenchido, redireciona para a área logada
                     window.location.href = 'arealogad.html';
                 } else {
-                    // Questionário NÃO preenchido, redireciona para a página do questionário
                     window.location.href = 'questionario.html';
                 }
             }
-            // Se não estiver logado, permanece nesta página para registro/login
         });
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -104,9 +81,10 @@
 
                     try {
                         await createUserWithEmailAndPassword(auth, email, password);
-                        // O redirecionamento é tratado automaticamente pelo onAuthStateChanged acima
-                        // após o sucesso do registro ou login.
+                        // O redirecionamento é tratado automaticamente pelo onAuthStateChanged
+                        // após o sucesso do registro.
                     } catch (error) {
+                        // Exibe um alerta com a mensagem de erro específica do Firebase
                         alert(`Erro ao registrar: ${error.message}`);
                         console.error('Erro de registro:', error);
                     }
@@ -118,9 +96,9 @@
                 googleSignInButton.addEventListener('click', async () => {
                     try {
                         await signInWithPopup(auth, googleProvider);
-                        // O redirecionamento é tratado automaticamente pelo onAuthStateChanged acima
-                        // após o sucesso do registro ou login.
-                    } catch (error) {
+                        // O redirecionamento é tratado automaticamente pelo onAuthStateChanged
+                        // após o sucesso do registro/login.
+                    } catch (error) { 
                         if (error.code === 'auth/popup-closed-by-user') {
                             alert('O pop-up de login do Google foi fechado. Por favor, tente novamente.');
                         } else {
@@ -133,53 +111,6 @@
         });
     </script>
 
-    <style>
-        .google-button {
-            background-color: white;
-            color: #4285F4;
-            border: 1px solid #ddd;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            transition: background-color 0.3s;
-        }
-        .google-button:hover {
-            background-color: #f0f0f0;
-        }
-        .google-button img {
-            width: 20px;
-            height: 20px;
-        }
-        .divider {
-            text-align: center;
-            margin: 20px 0;
-            position: relative;
-            font-size: 0.9rem;
-            color: #777;
-        }
-        .divider::before,
-        .divider::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            width: 40%;
-            height: 1px;
-            background-color: #eee;
-        }
-        .divider::before {
-            left: 0;
-        }
-        .divider::after {
-            right: 0;
-        }
-        .divider span {
-            background-color: white;
-            padding: 0 10px;
-            z-index: 1;
-            position: relative;
-        }
-    </style>
+    
 </body>
 </html>
