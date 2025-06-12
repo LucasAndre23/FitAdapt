@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitAdapt - Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Open+Sans:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="user-header">
+        <a href="index.html" class="logo">FitAdapt</a>
+    </header>
+
+    <main class="login-section" style="padding-top: 2rem;">
+        <div class="login-container">
+            <h2>Acesse sua Conta FitAdapt</h2>
+            
+            <form id="login-form" class="login-form">
+                <input type="email" id="login-email" placeholder="E-mail" required>
+                <input type="password" id="login-password" placeholder="Senha" required>
+                <button type="submit" class="cta-button">Entrar com E-mail</button>
+            </form>
+
+            <div class="divider">
+                <span>OU</span>
+            </div>
+
+            <button id="google-signin-button-login" class="cta-button google-button">
+                <img src="https://img.icons8.com/color/16/000000/google-logo.png" alt="Google icon">
+                Entrar com Google
+            </button>
+
+            <p class="login-link" style="margin-top: 1.5rem;">Ainda não tem uma conta? <a href="registro.html">Crie sua Conta</a></p>
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2023 FitAdapt - Todos os direitos reservados</p>
+        <p>contato@fitadapt.com.br | (55) 83 9999-9999 </p>
+    </footer>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js';
+        import { 
+            getAuth, 
+            signInWithEmailAndPassword, 
+            signInWithPopup, 
+            GoogleAuthProvider, 
+            onAuthStateChanged 
+        } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js';
+        import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCn-qbqXscs8x9DhZbFQQc_m4-X_ji4jvg",
+            authDomain: "fitadapt-4a71a.firebaseapp.com",
+            projectId: "fitadapt-4a71a",
+            storageBucket: "fitadapt-4a71a.firebasestorage.app",
+            messagingSenderId: "525068610805",
+            appId: "1:525068610805:web:3e4d3526a93c602ec4e9bc",
+            measurementId: "G-96J6RKBQY3"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const googleProvider = new GoogleAuthProvider();
+
+        // Verifica o estado de autenticação ao carregar a página de login
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                // Usuário logado. Agora verifica se ele já preencheu o questionário.
+                const userQuestionnaireRef = doc(db, "user_questionnaires", user.uid);
+                const userQuestionnaireSnap = await getDoc(userQuestionnaireRef);
+
+                if (userQuestionnaireSnap.exists()) {
+                    // Questionário já preenchido, redireciona para a área logada
+                    window.location.href = 'arealogad.html';
+                } else {
+                    // Questionário NÃO preenchido, redireciona para a página do questionário
+                    window.location.href = 'questionario.html';
+                }
+            }
+            // Se não estiver logado, permanece nesta página de login
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginForm = document.getElementById('login-form');
+            const googleSignInButton = document.getElementById('google-signin-button-login');
+
+            // Login com E-mail e Senha
+            if (loginForm) {
+                loginForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const email = document.getElementById('login-email').value;
+                    const password = document.getElementById('login-password').value;
+
+                    try {
+                        await signInWithEmailAndPassword(auth, email, password);
+                        // O redirecionamento é tratado automaticamente pelo onAuthStateChanged acima
+                    } catch (error) {
+                        alert(`Erro ao fazer login: ${error.message}`);
+                        console.error('Erro de login:', error);
+                    }
+                });
+            }
+
+            // Login com Google
+            if (googleSignInButton) {
+                googleSignInButton.addEventListener('click', async () => {
+                    try {
+                        await signInWithPopup(auth, googleProvider);
+                        // O redirecionamento é tratado automaticamente pelo onAuthStateChanged acima
+                    } catch (error) {
+                        if (error.code === 'auth/popup-closed-by-user') {
+                            alert('O pop-up de login do Google foi fechado. Por favor, tente novamente.');
+                        } else {
+                            alert(`Erro ao fazer login com Google: ${error.message}`);
+                        }
+                        console.error('Erro de login com Google:', error);
+                    }
+                });
+            }
+        });
+    </script>
+   
+</body>
+</html>
