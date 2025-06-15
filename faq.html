@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitAdapt - Perguntas Frequentes (FAQ)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Open+Sans:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="faq.css">
+</head>
+<body>
+    <header class="user-header">
+        <a href="index.html" class="logo">FitAdapt</a>
+    </header>
+
+    <main class="faq-section">
+        <h2>Perguntas Frequentes (FAQ)</h2>
+        
+        <div class="faq-item">
+            <div class="faq-question">O que é o FitAdapt?</div>
+            <div class="faq-answer">
+                <p>O FitAdapt é uma plataforma inovadora que oferece planos de treino personalizados, adaptados às suas necessidades, objetivos e rotina. Nosso objetivo é ajudar você a alcançar seus resultados de forma eficaz e sustentável.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">Como o FitAdapt personaliza os planos?</div>
+            <div class="faq-answer">
+                <p>Ao se cadastrar, você preenche um questionário sobre suas restrições e objetivos. Com base nessas informações, nossos algoritmos inteligentes e especialistas desenvolvem um plano exclusivo para você.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">Preciso ter experiência prévia em treinos para usar o FitAdapt?</div>
+            <div class="faq-answer">
+                <p>Não! O FitAdapt é projetado para todos os níveis, desde iniciantes até atletas experientes. Os treinos são ajustados à sua capacidade, e oferecemos descrições detalhadas e vídeos de cada exercício.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">Posso mudar meu plano a qualquer momento?</div>
+            <div class="faq-answer">
+                <p>Sim, você pode ajustar suas preferências e objetivos no seu perfil a qualquer momento. O FitAdapt irá recalibrar seu plano para se adequar às suas novas informações.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">O FitAdapt oferece suporte?</div>
+            <div class="faq-answer">
+                <p>Sim! Temos uma equipe de suporte dedicada pronta para ajudar com quaisquer dúvidas ou problemas. Você pode nos contatar através do e-mail ou telefone informados no rodapé.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">Qual é o custo do FitAdapt?</div>
+            <div class="faq-answer">
+                <p>Oferecemos diferentes planos de assinatura para atender às suas necessidades. Visite nossa página inicial para mais detalhes ou entre em contato para um orçamento personalizado.</p>
+            </div>
+        </div>
+
+    </main>
+
+    <footer>
+        <p>© 2025 FitAdapt - Todos os direitos reservados</p>
+        <p>contato@fitadapt.com.br | (55) 83 9999-9999 </p>
+    </footer>
+
+    <script>
+        // JavaScript para o comportamento de "sanfona" (accordion) do FAQ
+        document.addEventListener('DOMContentLoaded', () => {
+            const faqQuestions = document.querySelectorAll('.faq-question');
+
+            faqQuestions.forEach(question => {
+                question.addEventListener('click', () => {
+                    const answer = question.nextElementSibling;
+                    
+                    // Fecha todas as outras respostas abertas
+                    faqQuestions.forEach(otherQuestion => {
+                        if (otherQuestion !== question && otherQuestion.classList.contains('active')) {
+                            otherQuestion.classList.remove('active');
+                            otherQuestion.nextElementSibling.classList.remove('active');
+                        }
+                    });
+
+                    // Alterna a resposta clicada
+                    question.classList.toggle('active');
+                    answer.classList.toggle('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
