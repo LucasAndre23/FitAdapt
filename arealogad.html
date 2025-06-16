@@ -287,9 +287,20 @@
         // Verifica o estado de autenticação
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                currentUserUid = user.uid; // Armazena o UID do usuário
-                document.getElementById('user-email').textContent = user.email;
-                document.getElementById('user-avatar-char').textContent = user.email ? user.email.charAt(0).toUpperCase() : 'U';
+                // currentUserUid = user.uid; // Armazena o UID do usuário
+                // document.getElementById('user-email').textContent = user.email;
+                // document.getElementById('user-avatar-char').textContent = user.email ? user.email.charAt(0).toUpperCase() : 'U';
+
+                 const userNameElement = document.getElementById('user-nome');
+                if (userNameElement) {
+                    userNameElement.textContent = user.displayName || 'Usuário'; // Usa o displayName ou um fallback
+                }
+
+                 // Exibe a primeira letra do NOME no avatar
+                const userAvatarCharElement = document.getElementById('user-avatar-char');
+                if (userAvatarCharElement) {
+                    userAvatarCharElement.textContent = user.displayName ? user.displayName.charAt(0).toUpperCase() : 'U';
+                }
 
                 const userQuestionnaireRef = doc(db, "user_questionnaires", user.uid);
                 const userQuestionnaireSnap = await getDoc(userQuestionnaireRef);
@@ -327,7 +338,7 @@
     <header class="user-header">
         <a href="index.html" class="logo">FitAdapt</a>
         <div class="user-info">
-            <span>Olá, <strong id="user-email"></strong></span>
+            <span>Olá, <strong id="user-nome"></strong></span>
             <div class="user-avatar" id="user-avatar-char">U</div>
             <button id="logout-button" class="cta-button small-button">Sair</button>
         </div>

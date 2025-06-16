@@ -19,6 +19,9 @@
             <h2>Crie sua Conta FitAdapt</h2>
             
             <form id="register-form" class="login-form">
+                <!--  -->
+                <input type="nome" id="reg-nome" placeholder="Nome" required>
+                <!--  -->
                 <input type="email" id="reg-email" placeholder="E-mail" required>
                 <input type="password" id="reg-password" placeholder="Crie sua senha (mínimo 6 caracteres)" required minlength="6">
                 <button type="submit" class="cta-button">Registrar com E-mail</button>
@@ -49,7 +52,8 @@
         import { 
             createUserWithEmailAndPassword, 
             signInWithPopup, 
-            onAuthStateChanged // onAuthStateChanged também vem do auth
+            onAuthStateChanged, // onAuthStateChanged também vem do auth
+            updateProfile
         } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js'; 
         // Importa módulos Firestore específicos
         import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js';
@@ -78,11 +82,22 @@
                     e.preventDefault();
                     const email = document.getElementById('reg-email').value;
                     const password = document.getElementById('reg-password').value;
+                    const nome = document.getElementById('reg-nome').value;
 
                     try {
-                        await createUserWithEmailAndPassword(auth, email, password);
-                        // O redirecionamento é tratado automaticamente pelo onAuthStateChanged
-                        // após o sucesso do registro.
+                        // await createUserWithEmailAndPassword(auth, email, password);
+                        // // O redirecionamento é tratado automaticamente pelo onAuthStateChanged
+                        // // após o sucesso do registro.
+
+                        // await updateProfile(user, {
+                        //     displayName: nome // <--- Adicione esta linha
+                        // });
+                        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                        const user = userCredential.user;
+
+                        await updateProfile(user, {
+                            displayName: nome
+                        });
                     } catch (error) {
                         // Exibe um alerta com a mensagem de erro específica do Firebase
                         alert(`Erro ao registrar: ${error.message}`);
