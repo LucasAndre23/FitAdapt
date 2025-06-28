@@ -10,12 +10,15 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Cabeçalho Simples -->
     <header class="user-header">
         <a href="index.html" class="logo">FitAdapt</a>
-    </header>
+                <div class="user-info">
+            <span>Olá, <strong id="user-nome"></strong></span>
+            <div class="user-avatar" id="user-avatar-char">U</div>
+            <button id="logout-button" class="cta-button small-button">Sair</button>
+        </div>
+            </header>
 
-    <!-- Seção do Questionário Adaptativo -->
     <section class="questionario-section" id="questionario">
         <div class="questionario-container">
             <h2>Seu Questionário de Adaptação</h2>
@@ -89,31 +92,46 @@
         </div>
     </section>
 
-    <!-- Rodapé -->
     <footer>
-        <p>© 2023 FitAdapt - Todos os direitos reservados</p>
+        <p>© 2025 FitAdapt - Todos os direitos reservados</p>
         <p>contato@fitadapt.com.br | (55) 83 9999-9999 </p>
     </footer>
 
-    <!-- Firebase Scripts para o Questionário -->
     <script type="module">
         // Importa as instâncias do Firebase do arquivo compartilhado
         import { auth, db } from './firebase-init.js';
         // Importa módulos Firebase específicos necessários para esta página
-        import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js'; // CORRIGIDO: de firebase-auth.js
+        import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js';
         import { doc, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js';
 
-        // Verifica o estado de autenticação e redireciona se o questionário já foi preenchido
+        // REVISÃO DE LÓGICA: Verifica o estado de autenticação e redireciona se o questionário já foi preenchido
         onAuthStateChanged(auth, async (user) => {
             if (user) {
+                // Lógica de exibição do nome e avatar do usuário
+                const userNameElement = document.getElementById('user-nome');
+                const userAvatarCharElement = document.getElementById('user-avatar-char');
+                const userName = user.displayName || (user.email ? user.email.split('@')[0] : 'Usuário');
+                if (userNameElement) {
+                    userNameElement.textContent = userName;
+                }
+                if (userAvatarCharElement) {
+                    userAvatarCharElement.textContent = userName.charAt(0).toUpperCase();
+                }
+
+                // Lógica de verificação do questionário
                 const userQuestionnaireRef = doc(db, "user_questionnaires", user.uid);
                 const userQuestionnaireSnap = await getDoc(userQuestionnaireRef);
 
                 if (userQuestionnaireSnap.exists()) {
-                    // Questionário já preenchido, redireciona para a área logada
-                    window.location.href = 'arealogad.html';
+                    const questionnaireData = userQuestionnaireSnap.data();
+                    
+                    // Verifica se o plano já foi selecionado (campo 'plano' preenchido) e se o questionário está completo
+                    // Você pode adicionar mais verificações aqui, se necessário
+                    if (questionnaireData.plano && questionnaireData.objetivo) {
+                        console.log("Questionário já preenchido. Redirecionando para a área logada.");
+                        window.location.href = 'arealogad.html';
+                    }
                 }
-                // Se não existe, permanece nesta página para preencher
             } else {
                 // Se não há usuário logado, redireciona para a página de login
                 window.location.href = 'login.html';
@@ -148,6 +166,20 @@
             if (dataConsultaInput) {
                 dataConsultaInput.min = tomorrow.toISOString().split('T')[0];
             }
+            
+            // Lógica de logout
+            const logoutButton = document.getElementById('logout-button');
+            if (logoutButton) {
+                logoutButton.addEventListener('click', async () => {
+                    try {
+                        await signOut(auth);
+                        window.location.href = 'login.html'; 
+                    } catch (error) {
+                        alert(`Erro ao fazer logout: ${error.message}`);
+                        console.error('Erro de logout:', error);
+                    }
+                });
+            }
 
             // Lógica de Submissão do Questionário e Salvamento no Firestore
             const questionarioForm = document.querySelector('.questionario-form');
@@ -161,9 +193,20 @@
                         window.location.href = 'login.html';
                         return;
                     }
-
+                    
+                    // **Nova lógica:** Pega o plano do localStorage
+                    const selectedPlan = localStorage.getItem('selectedPlan');
+                    
+                    // Verifica se o plano foi selecionado antes de enviar
+                    if (!selectedPlan) {
+                        alert('Por favor, selecione um plano antes de preencher o questionário.');
+                        window.location.href = 'planos.html';
+                        return;
+                    }
+                    
                     const questionarioData = {
                         objetivo: document.getElementById('objetivo-select').value,
+                        plano: selectedPlan, // **Adiciona a informação do plano aqui**
                         limitacao: questionarioForm.querySelector('input[name="limitacao"]:checked').value,
                         necessidades: document.getElementById('necessidades-textarea').value,
                         agendamento: agendamentoSimRadio.checked ? {
@@ -177,7 +220,11 @@
                     try {
                         await setDoc(doc(db, "user_questionnaires", user.uid), questionarioData);
                         alert('Questionário enviado e salvo com sucesso! Redirecionando para seu plano...');
-                        window.location.href = 'arealogad.html'; // Redireciona para a área logada após salvar
+                        
+                        // **Nova lógica:** Remove a informação do localStorage após o uso
+                        localStorage.removeItem('selectedPlan'); 
+
+                        window.location.href = 'arealogad.html';
                     } catch (error) {
                         alert(`Erro ao salvar questionário: ${error.message}`);
                         console.error('Erro ao salvar questionário:', error);

@@ -19,9 +19,7 @@
             <h2>Crie sua Conta FitAdapt</h2>
             
             <form id="register-form" class="login-form">
-                <!--  -->
                 <input type="nome" id="reg-nome" placeholder="Nome" required>
-                <!--  -->
                 <input type="email" id="reg-email" placeholder="E-mail" required>
                 <input type="password" id="reg-password" placeholder="Crie sua senha (mínimo 6 caracteres)" required minlength="6">
                 <button type="submit" class="cta-button">Registrar com E-mail</button>
@@ -52,23 +50,18 @@
         import { 
             createUserWithEmailAndPassword, 
             signInWithPopup, 
-            onAuthStateChanged, // onAuthStateChanged também vem do auth
+            onAuthStateChanged,
             updateProfile
         } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js'; 
-        // Importa módulos Firestore específicos
-        import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js';
+        // Não precisamos de Firestore nesta página para o redirecionamento.
+        // import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js';
 
         // Lógica de verificação de autenticação e redirecionamento
-        onAuthStateChanged(auth, async (user) => {
+        // Este onAuthStateChanged agora apenas redireciona para a página de planos.
+        onAuthStateChanged(auth, (user) => {
             if (user) {
-                const userQuestionnaireRef = doc(db, "user_questionnaires", user.uid);
-                const userQuestionnaireSnap = await getDoc(userQuestionnaireRef);
-
-                if (userQuestionnaireSnap.exists()) {
-                    window.location.href = 'arealogad.html';
-                } else {
-                    window.location.href = 'questionario.html';
-                }
+                // Redireciona diretamente para a página de planos após login/registro.
+                window.location.href = 'planos.html';
             }
         });
 
@@ -85,21 +78,14 @@
                     const nome = document.getElementById('reg-nome').value;
 
                     try {
-                        // await createUserWithEmailAndPassword(auth, email, password);
-                        // // O redirecionamento é tratado automaticamente pelo onAuthStateChanged
-                        // // após o sucesso do registro.
-
-                        // await updateProfile(user, {
-                        //     displayName: nome // <--- Adicione esta linha
-                        // });
                         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                         const user = userCredential.user;
 
                         await updateProfile(user, {
                             displayName: nome
                         });
+                        // O onAuthStateChanged vai cuidar do redirecionamento após o registro.
                     } catch (error) {
-                        // Exibe um alerta com a mensagem de erro específica do Firebase
                         alert(`Erro ao registrar: ${error.message}`);
                         console.error('Erro de registro:', error);
                     }
@@ -111,8 +97,7 @@
                 googleSignInButton.addEventListener('click', async () => {
                     try {
                         await signInWithPopup(auth, googleProvider);
-                        // O redirecionamento é tratado automaticamente pelo onAuthStateChanged
-                        // após o sucesso do registro/login.
+                        // O onAuthStateChanged vai cuidar do redirecionamento após o login.
                     } catch (error) { 
                         if (error.code === 'auth/popup-closed-by-user') {
                             alert('O pop-up de login do Google foi fechado. Por favor, tente novamente.');

@@ -9,13 +9,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Open+Sans:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 
-    <!-- INÍCIO DA INTEGRAÇÃO FIREBASE NA ÁREA LOGADA -->
     <script type="module">
         // Importa as instâncias do Firebase do arquivo compartilhado
         import { auth, db } from './firebase-init.js';
         // Importa módulos Firebase específicos necessários para esta página
-        import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js'; 
-        import { doc, getDoc, updateDoc } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js';
+        import { onAuthStateChanged, signOut, updateProfile } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js';
+        import { doc, getDoc, updateDoc, arrayUnion, arrayRemove } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js';
 
         // --- Estrutura de Dados para Planos de Treino ---
         const workoutPlans = {
@@ -32,7 +31,7 @@
                         },
                         {
                             title: 'Mobilidade de Quadril',
-                            videoUrl: 'https://www.youtube.com/embed/Z52p8Xl3XjA', // Exemplo de vídeo de mobilidade de quadril
+                            videoUrl: 'https://www.youtube.com/embed/Z52p8Xl3XjA',
                             duration: '8 min',
                             intensity: 'Leve',
                             description: 'Exercícios suaves para melhorar a amplitude de movimento do quadril.'
@@ -44,14 +43,14 @@
                     exercises: [
                         {
                             title: 'Rotações de Ombro e Pescoço',
-                            videoUrl: 'https://www.youtube.com/embed/09m8d1T6QpQ', // Exemplo de vídeo de mobilidade de ombro
+                            videoUrl: 'https://www.youtube.com/embed/09m8d1T6QpQ',
                             duration: '7 min',
                             intensity: 'Leve',
                             description: 'Movimentos circulares e suaves para aumentar a flexibilidade dos ombros e aliviar a tensão no pescoço.'
                         },
-                         {
+                        {
                             title: 'Flexão Lateral de Tronco',
-                            videoUrl: 'https://www.youtube.com/embed/J1f3w0fE4uQ', // Exemplo de vídeo de mobilidade de tronco
+                            videoUrl: 'https://www.youtube.com/embed/J1f3w0fE4uQ',
                             duration: '5 min',
                             intensity: 'Leve',
                             description: 'Alongamento lateral para melhorar a flexibilidade da coluna e do tronco.'
@@ -65,14 +64,14 @@
                     exercises: [
                         {
                             title: 'Alongamento Gato-Camelo',
-                            videoUrl: 'https://www.youtube.com/embed/QEzj6OMR3t8', // Reutilizando vídeo, mas o foco é diferente
+                            videoUrl: 'https://www.youtube.com/embed/QEzj6OMR3t8',
                             duration: '10 min',
                             intensity: 'Suave',
                             description: 'Movimento para mobilizar a coluna e aliviar a compressão na região lombar.'
                         },
                         {
                             title: 'Ponte para Glúteos',
-                            videoUrl: 'https://www.youtube.com/embed/W-d4Jj7m_wM', // Exemplo de ponte para glúteos
+                            videoUrl: 'https://www.youtube.com/embed/W-d4Jj7m_wM',
                             duration: '12 min',
                             intensity: 'Moderado',
                             description: 'Fortalecimento de glúteos para dar suporte à região lombar e reduzir dores.'
@@ -86,14 +85,14 @@
                     exercises: [
                         {
                             title: 'Caminhada Adaptada (Baixo Impacto)',
-                            videoUrl: 'https://www.youtube.com/embed/1vR2aL5Q_7o', // Exemplo de caminhada adaptada
+                            videoUrl: 'https://www.youtube.com/embed/1vR2aL5Q_7o',
                             duration: '20 min',
                             intensity: 'Leve',
                             description: 'Série de caminhada e movimentos leves para melhorar a capacidade cardiovascular sem sobrecarga.'
                         },
                         {
                             title: 'Polichinelos Modificados',
-                            videoUrl: 'https://www.youtube.com/embed/i38vI0Y6eUo', // Exemplo de polichinelo modificado
+                            videoUrl: 'https://www.youtube.com/embed/i38vI0Y6eUo',
                             duration: '10 min',
                             intensity: 'Moderado',
                             description: 'Versão de baixo impacto do polichinelo, ideal para aquecimento e condicionamento.'
@@ -107,14 +106,14 @@
                     exercises: [
                         {
                             title: 'Isometria de Quadríceps',
-                            videoUrl: 'https://www.youtube.com/embed/o7jK8tBGNVQ', // Reutilizando vídeo, mas o foco é diferente
+                            videoUrl: 'https://www.youtube.com/embed/o7jK8tBGNVQ',
                             duration: '8 min',
                             intensity: 'Baixíssima',
                             description: 'Exercícios isométricos para fortalecer o quadríceps sem movimento articular, essencial na recuperação de lesões no joelho.'
                         },
                         {
                             title: 'Elevação de Calcanhares Sentado',
-                            videoUrl: 'https://www.youtube.com/embed/g_y9v3-7d_Q', // Exemplo de elevação de calcanhares
+                            videoUrl: 'https://www.youtube.com/embed/g_y9v3-7d_Q',
                             duration: '7 min',
                             intensity: 'Leve',
                             description: 'Movimento suave para ativar os músculos da panturrilha e melhorar a circulação.'
@@ -207,7 +206,6 @@
                     const exerciseCard = document.createElement('div');
                     exerciseCard.classList.add('exercise-card');
                     // Cria um ID único para cada exercício baseado no título do vídeo
-                    // para marcar a conclusão no Firestore
                     const exerciseId = exercise.videoUrl; // Usar a URL do vídeo como ID único por simplicidade
 
                     const isCompleted = completedExercisesSet.has(exerciseId);
@@ -223,7 +221,7 @@
                                 <span class="badge">💪 ${exercise.intensity}</span>
                             </div>
                             <p>${exercise.description}</p>
-                            <button class="cta-button mark-as-done-button ${isCompleted ? 'completed' : ''}" data-exercise-id="${exerciseId}" ${isCompleted ? 'disabled' : ''}>
+                            <button class="cta-button mark-as-done-button ${isCompleted ? 'completed' : ''}" data-exercise-id="${exerciseId}">
                                 ${isCompleted ? 'Concluído!' : 'Marcar como concluído'}
                             </button>
                         </div>
@@ -258,48 +256,64 @@
                 const docSnap = await getDoc(userQuestionnaireRef);
                 if (docSnap.exists()) {
                     let currentCompleted = docSnap.data().completedExercises || [];
-                    // Adiciona o exercício se ainda não estiver na lista
-                    if (!currentCompleted.includes(exerciseId)) {
-                        currentCompleted.push(exerciseId);
+                    
+                    const isCompleted = currentCompleted.includes(exerciseId);
+
+                    if (isCompleted) {
+                        // Se já está concluído, REMOVE do array (desmarca)
                         await updateDoc(userQuestionnaireRef, {
-                            completedExercises: currentCompleted
+                            completedExercises: arrayRemove(exerciseId)
                         });
-                        // Atualiza a variável global com os novos dados
-                        userQuestionnaireData.completedExercises = currentCompleted;
+                        // Atualiza a variável global
+                        const index = currentCompleted.indexOf(exerciseId);
+                        if (index > -1) {
+                            currentCompleted.splice(index, 1);
+                        }
+                        
+                        button.textContent = 'Marcar como concluído';
+                        button.classList.remove('completed');
+                    } else {
+                        // Se NÃO está concluído, ADICIONA ao array (marca)
+                        await updateDoc(userQuestionnaireRef, {
+                            completedExercises: arrayUnion(exerciseId)
+                        });
+                        // Atualiza a variável global
+                        currentCompleted.push(exerciseId);
 
                         button.textContent = 'Concluído!';
-                        button.disabled = true;
-                        button.classList.add('completed');
-                        updateProgressDisplay(); // Recalcula e exibe o progresso
-                    } else {
-                        // Se já está marcado, apenas atualiza o botão para garantir a consistência visual
-                        button.textContent = 'Concluído!';
-                        button.disabled = true;
                         button.classList.add('completed');
                     }
+                    
+                    // Atualiza a variável global com os novos dados
+                    userQuestionnaireData.completedExercises = currentCompleted;
+                    
+                    updateProgressDisplay(); // Recalcula e exibe o progresso
                 }
             } catch (error) {
-                alert(`Erro ao marcar como concluído: ${error.message}`);
-                console.error('Erro ao marcar como concluído:', error);
+                alert(`Erro ao atualizar o status: ${error.message}`);
+                console.error('Erro ao atualizar o status do exercício:', error);
             }
         }
-
+        
         // Verifica o estado de autenticação
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                // currentUserUid = user.uid; // Armazena o UID do usuário
-                // document.getElementById('user-email').textContent = user.email;
-                // document.getElementById('user-avatar-char').textContent = user.email ? user.email.charAt(0).toUpperCase() : 'U';
+                // ESSENCIAL: Armazena o UID do usuário na variável global
+                currentUserUid = user.uid;
 
-                 const userNameElement = document.getElementById('user-nome');
+                let userName = user.displayName;
+                
+                // Exibe o nome do usuário e a primeira letra no avatar
+                const userNameElement = document.getElementById('user-nome');
                 if (userNameElement) {
-                    userNameElement.textContent = user.displayName || 'Usuário'; // Usa o displayName ou um fallback
+                    // Usa o nome do Firebase Auth, ou 'Usuário' como padrão
+                    userNameElement.textContent = userName || 'Usuário';
                 }
 
-                 // Exibe a primeira letra do NOME no avatar
                 const userAvatarCharElement = document.getElementById('user-avatar-char');
                 if (userAvatarCharElement) {
-                    userAvatarCharElement.textContent = user.displayName ? user.displayName.charAt(0).toUpperCase() : 'U';
+                    // Usa a primeira letra do nome, ou 'U' como padrão
+                    userAvatarCharElement.textContent = userName ? userName.charAt(0).toUpperCase() : 'U';
                 }
 
                 const userQuestionnaireRef = doc(db, "user_questionnaires", user.uid);
@@ -308,7 +322,7 @@
                 if (userQuestionnaireSnap.exists()) {
                     displayWorkoutPlan(userQuestionnaireSnap.data());
                 } else {
-                    window.location.href = 'questionario.html';
+                    window.location.href = 'planos.html';
                 }
             } else {
                 window.location.href = 'login.html';
@@ -330,11 +344,8 @@
             }
         });
     </script>
-    <!-- FIM DA INTEGRAÇÃO FIREBASE NA ÁREA LOGADA -->
-    
 </head>
 <body>
-    <!-- Cabeçalho da Área Logada -->
     <header class="user-header">
         <a href="index.html" class="logo">FitAdapt</a>
         <div class="user-info">
@@ -344,12 +355,10 @@
         </div>
     </header>
 
-    <!-- Conteúdo Principal - O plano de treino será injetado aqui -->
     <main class="workout-plan">
         <h1>Seu Plano Personalizado</h1>
         <p class="subtitle">Baseado nas suas necessidades específicas</p>
         
-        <!-- Nova Seção de Progresso -->
         <div id="progress-container" class="progress-container">
             <div id="progress-bar-fill" class="progress-bar-fill"></div>
             <span id="progress-text" class="progress-text">Carregando Progresso...</span>
@@ -360,7 +369,6 @@
         </div>
     </main>
 
-    <!-- Rodapé da página (o progresso foi removido daqui) -->
     <footer>
         <p>© 2023 FitAdapt - Todos os direitos reservados</p>
         <p>contato@fitadapt.com.br | (55) 83 9999-9999 </p>

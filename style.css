@@ -12,8 +12,12 @@ body {
     color: #000000;
     line-height: 1.6;
 }
-h1, h2, h3, .logo {
-    font-family: 'Poppins', sans-serif; 
+
+h1,
+h2,
+h3,
+.logo {
+    font-family: 'Poppins', sans-serif;
     text-decoration: none;
     color: #ddd;
 }
@@ -169,7 +173,7 @@ nav ul li a {
     background: white;
     padding: 2rem;
     border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
     position: relative;
     transition: transform 0.3s;
 }
@@ -244,7 +248,7 @@ nav ul li a {
     background: white;
     padding: 2rem;
     border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 .login-form input {
@@ -278,7 +282,7 @@ nav ul li a {
     background: white;
     padding: 2rem;
     border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 .questionario-form .form-group {
@@ -293,7 +297,7 @@ nav ul li a {
     color: #2D3748;
 }
 
-.questionario-form select, 
+.questionario-form select,
 .questionario-form textarea {
     width: 100%;
     padding: 12px;
@@ -314,6 +318,7 @@ nav ul li a {
     font-weight: normal;
     cursor: pointer;
 }
+
 /* Estilos para a seção de agendamento */
 .agendamento-section {
     background-color: #f0f7ff;
@@ -329,7 +334,8 @@ nav ul li a {
 }
 
 /* Melhorias para os selects e inputs */
-select, input[type="date"] {
+select,
+input[type="date"] {
     width: 100%;
     padding: 12px;
     border: 1px solid #ddd;
@@ -337,22 +343,23 @@ select, input[type="date"] {
     font-family: 'Open Sans', sans-serif;
     margin-top: 0.5rem;
 }
+
 .agendamento-container {
-            background-color: #f8fafc;
-            padding: 1.5rem;
-            border-radius: 8px;
-            margin: 1.5rem 0;
-            border-left: 4px solid #4b6cb7;
-        }
-        
-        .agendamento-container h3 {
-            color: #182848;
-            margin-bottom: 0.5rem;
-        }
-        
-        .hidden {
-            display: none;
-        }
+    background-color: #f8fafc;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin: 1.5rem 0;
+    border-left: 4px solid #4b6cb7;
+}
+
+.agendamento-container h3 {
+    color: #182848;
+    margin-bottom: 0.5rem;
+}
+
+.hidden {
+    display: none;
+}
 
 /* Rodapé */
 footer {
@@ -385,14 +392,13 @@ footer p {
 
 /* Estilos da Área Logada */
 .user-header {
-    background: linear-gradient(135deg, #087234, #02fdd3); 
+    background: linear-gradient(135deg, #087234, #02fdd3);
     color: white;
     padding: 1rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
-
 
 .user-info {
     display: flex;
@@ -422,35 +428,40 @@ footer p {
     background: white;
     padding: 1.5rem;
     border-radius: 10px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
 }
 
+/* Alterações AQUI: O novo layout para os cards de exercício */
 .exercise-card {
-    display: flex;
-    gap: 2rem;
+    display: block; /* Alterado para empilhar os elementos */
     margin: 1.5rem 0;
-    align-items: flex-start;
+    padding: 1rem; /* Adicionado padding interno */
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    background-color: white;
 }
 
 .exercise-video {
-    flex: 1;
     position: relative;
-    padding-bottom: 56.25%; /* 16:9 */
+    padding-bottom: 56.25%; /* Mantém a proporção 16:9 */
     height: 0;
     overflow: hidden;
+    border-radius: 8px;
+    margin-bottom: 1rem; /* Adiciona espaço abaixo do vídeo */
 }
 
 .exercise-video iframe {
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
+    width: 100%; /* Vídeo ocupa 100% da largura do contêiner */
     height: 100%;
     border-radius: 8px;
 }
 
 .exercise-details {
-    flex: 1;
+    /* Não precisa de flex aqui */
+    padding: 0 0.5rem; /* Adicionado padding lateral para as informações */
 }
 
 .exercise-details h3 {
@@ -478,108 +489,122 @@ footer p {
     }
 }
 
-/*Login*/
+/* Login */
+.google-button {
+    background-color: white;
+    color: #4285F4;
+    border: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s;
+}
 
- .google-button {
-            background-color: white;
-            color: #4285F4;
-            border: 1px solid #ddd;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            transition: background-color 0.3s;
-        }
-        .google-button:hover {
-            background-color: #f0f0f0;
-        }
-        .google-button img {
-            width: 20px;
-            height: 20px;
-        }
-        .divider {
-            text-align: center;
-            margin: 20px 0;
-            position: relative;
-            font-size: 0.9rem;
-            color: #777;
-        }
-        .divider::before,
-        .divider::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            width: 40%;
-            height: 1px;
-            background-color: #eee;
-        }
-        .divider::before {
-            left: 0;
-        }
-        .divider::after {
-            right: 0;
-        }
-        .divider span {
-            background-color: white;
-            padding: 0 10px;
-            z-index: 1;
-            position: relative;
-        }
+.google-button:hover {
+    background-color: #f0f0f0;
+}
 
+.google-button img {
+    width: 20px;
+    height: 20px;
+}
 
+.divider {
+    text-align: center;
+    margin: 20px 0;
+    position: relative;
+    font-size: 0.9rem;
+    color: #777;
+}
 
- /* Estilos para a nova barra de progresso registro */
-        .progress-container {
-            width: 80%;
-            max-width: 600px;
-            background-color: #e0e0e0;
-            border-radius: 25px;
-            margin: 2rem auto;
-            overflow: hidden;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center; 
-            position: relative; 
-        }
+.divider::before,
+.divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 40%;
+    height: 1px;
+    background-color: #eee;
+}
 
-        .progress-bar-fill {
-            height: 100%;
-            width: 0%; 
-            background-color: #6a11cb; 
-            background-image: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
-            border-radius: 25px;
-            transition: width 0.5s ease-in-out;
-            position: absolute;
-            left: 0;
-            top: 0;
-            z-index: 1; 
-        }
+.divider::before {
+    left: 0;
+}
 
-        .progress-text {
-            position: relative; 
-            z-index: 2;
-            color: white; 
-            font-weight: bold;
-            text-shadow: 0 0 3px rgba(0,0,0,0.3);
-        }
+.divider::after {
+    right: 0;
+}
 
-        /* Estilo para o botão "Concluído" */
-        .mark-as-done-button.completed {
-            background-color: #d4edda; 
-            background-image: none; 
-            color: #155724; 
-            border: 1px solid #c3e6cb;
-            cursor: not-allowed;
-            opacity: 0.8;
-            box-shadow: none;
-        }
+.divider span {
+    background-color: white;
+    padding: 0 10px;
+    z-index: 1;
+    position: relative;
+}
 
-        /* Estilo para o card de exercício concluído (opcional) */
-        /* .exercise-card.completed {
-            border: 2px solid #155724;
-            background-color: #e6ffe6;
-            opacity: 0.9;
-        } */
+/* Estilos para a nova barra de progresso registro */
+.progress-container {
+    width: 80%;
+    max-width: 600px;
+    background-color: #e0e0e0;
+    border-radius: 25px;
+    margin: 2rem auto;
+    overflow: hidden;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    width: 0%;
+    background-color: #6a11cb;
+    background-image: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
+    border-radius: 25px;
+    transition: width 0.5s ease-in-out;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 1;
+}
+
+.progress-text {
+    position: relative;
+    z-index: 2;
+    color: white;
+    font-weight: bold;
+    text-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+}
+
+/* Estilo para o botão "Marcar como concluído" */
+.mark-as-done-button {
+    /* ... seus estilos originais do botão ... */
+    cursor: pointer;
+    /* Define o cursor como ponteiro por padrão */
+    transition: background-color 0.3s ease;
+}
+
+/* Estilo para o botão quando a ação é concluída */
+.mark-as-done-button.completed {
+    background-color: #4CAF50;
+    /* Um verde que indica sucesso */
+    color: white;
+    /* A CORREÇÃO PRINCIPAL está aqui: */
+    cursor: pointer;
+    /* Garante que o cursor seja um ponteiro para indicar que é clicável */
+    pointer-events: auto;
+    /* Garante que o elemento seja clicável (se estiver desativado por algum motivo) */
+}
+
+/* Opcional: Estilo ao passar o mouse por cima do botão concluído para reforçar a ação */
+.mark-as-done-button.completed:hover {
+    background-color: #3e8e41;
+    /* Um tom de verde mais escuro ao passar o mouse */
+    cursor: pointer;
+    /* Mantém o cursor como ponteiro */
+}

@@ -9,53 +9,91 @@
     <link rel="stylesheet" href="style.css">
     <title>FitAdapt - Fitness Inclusivo</title>
 
-    <!-- INÍCIO DA INTEGRAÇÃO FIREBASE -->
     <script type="module">
-        // Importa as instâncias do Firebase do arquivo compartilhado
         import { auth, db } from './firebase-init.js';
-        // Importa módulos Firebase específicos necessários para esta página
-        import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js'; 
-        import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js';
-
-        // Verifica o estado de autenticação ao carregar a página
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                // Se o usuário está logado, verifica se ele já preencheu o questionário
-                const userQuestionnaireRef = doc(db, "user_questionnaires", user.uid);
-                const userQuestionnaireSnap = await getDoc(userQuestionnaireRef);
-
-                if (!userQuestionnaireSnap.exists()) {
-                    // Se o questionário NÃO está preenchido, redireciona para a página do questionário
-                    window.location.href = 'questionario.html';
-                }
-                
-            }
-            // Se não estiver logado, permanece na página inicial para login/registro
-        });
+        import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js'; 
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Lógica para os botões "Assinar agora" e o link "Login/Criar Conta" na navegação
-            const loginLinks = document.querySelectorAll('a[href="registro.html"]');
-            loginLinks.forEach(link => {
-                link.addEventListener('click', (e) => {
-                    // Não precisa de e.preventDefault() aqui, pois o href já é um link direto
-                    // para registro.html. A lógica de redirecionamento no onAuthStateChanged
-                    // em registro.html cuidará de levar para a área logada se já estiver autenticado.
-                });
+            const userHeader = `
+                <a href="index.html" class="logo">FitAdapt</a>
+                <div class="user-info">
+                    <span>Olá, <strong id="user-nome"></strong></span>
+                    <div class="user-avatar" id="user-avatar-char">U</div>
+                    <button id="logout-button" class="cta-button small-button">Sair</button>
+                </div>
+            `;
+
+            const defaultHeader = `
+                <a href="index.html" class="logo">FitAdapt</a>
+                <div class="slogan">Fitness personalizado para todos</div>
+            `;
+
+            const headerElement = document.querySelector('header');
+            const navLoginLink = document.querySelector('nav ul li a[href="login.html"]');
+            const ctaButtons = document.querySelectorAll('a.cta-button[href="registro.html"]');
+            const userNavLink = `<li><a href="arealogad.html">Meu Plano</a></li>`;
+
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    // Se o usuário está logado, atualiza o cabeçalho e a navegação
+                    if (headerElement) {
+                        headerElement.innerHTML = userHeader;
+                        headerElement.classList.add('user-header');
+                    }
+
+                    // Atualiza os links de navegação para a área logada
+                    if (navLoginLink) {
+                        const newLink = document.createElement('li');
+                        newLink.innerHTML = `<a href="arealogad.html">Meu Plano</a>`;
+                        navLoginLink.parentElement.replaceWith(newLink);
+                    }
+                    
+                    // Atualiza os botões CTA
+                    ctaButtons.forEach(button => {
+                        button.href = 'arealogad.html';
+                        button.textContent = 'Ir para o Plano';
+                    });
+                    
+                    // Preenche o nome e avatar do usuário
+                    const userName = user.displayName || (user.email ? user.email.split('@')[0] : 'Usuário');
+                    const userNameElement = document.getElementById('user-nome');
+                    const userAvatarCharElement = document.getElementById('user-avatar-char');
+                    if (userNameElement) userNameElement.textContent = userName;
+                    if (userAvatarCharElement) userAvatarCharElement.textContent = userName.charAt(0).toUpperCase();
+
+                    // Adiciona o listener de logout
+                    const logoutButton = document.getElementById('logout-button');
+                    if (logoutButton) {
+                        logoutButton.addEventListener('click', async () => {
+                            await signOut(auth);
+                            window.location.href = 'login.html';
+                        });
+                    }
+                } else {
+                    // Se não estiver logado, garante que o cabeçalho e links estejam padrão
+                    if (headerElement && !headerElement.classList.contains('user-header')) {
+                        headerElement.innerHTML = defaultHeader;
+                    }
+                    if (navLoginLink) {
+                        navLoginLink.href = 'login.html';
+                        navLoginLink.textContent = 'Entrar';
+                    }
+                    ctaButtons.forEach(button => {
+                        button.href = 'registro.html';
+                        button.textContent = 'Comece Agora';
+                    });
+                }
             });
         });
     </script>
-    <!-- FIM DA INTEGRAÇÃO FIREBASE -->
 </head>
 
 <body>
-    <!-- Cabeçalho principal do site -->
     <header>
-        <div class="logo">FitAdapt</div>
+        <a href="index.html" class="logo">FitAdapt</a>
         <div class="slogan">Fitness personalizado para todos</div>
     </header>
 
-    <!-- Navegação do site -->
     <nav>
         <ul>
             <li><a href="#home">Início</a></li>
@@ -66,7 +104,6 @@
         </ul>
     </nav>
 
-    <!-- Seção Hero (banner principal) -->
     <section class="hero" id="home">
         <div class="hero-content">
             <h1>Treinos adaptados para suas necessidades</h1>
@@ -75,7 +112,6 @@
         </div>
     </section>
 
-    <!-- Seção de Funcionalidades -->
     <section class="features" id="features">
         <h2>Nossas Funcionalidades</h2>
         <div class="features-grid">
@@ -98,14 +134,12 @@
         </div>
     </section>
 
-    <!-- Seção de Planos de Preço -->
     <section class="pricing-section" id="planos">
         <div class="pricing-container">
             <h2>Nossos Planos</h2>
             <p class="subtitle">Escolha o que melhor se adapta à sua rotina</p>
             
             <div class="pricing-grid">
-                <!-- Card do Plano Mensal -->
                 <div class="pricing-card">
                     <h3>Mensal</h3>
                     <div class="price">R$ 70<span>/mês</span></div>
@@ -115,10 +149,8 @@
                         <li>✔ Suporte por e-mail</li>
                         <li>✔ 1 consultoria online</li>
                     </ul>
-                    <a href="registro.html" class="cta-button">Assinar agora</a> <!-- Redireciona para registro.html -->
-                </div>
+                    <a href="registro.html" class="cta-button">Assinar agora</a> </div>
                 
-                <!-- Card do Plano Trimestral (Destaque) -->
                 <div class="pricing-card highlight">
                     <div class="popular-badge">Mais popular</div>
                     <h3>Trimestral</h3>
@@ -130,10 +162,8 @@
                         <li>✔ Suporte prioritário</li>
                         <li>✔ 3 consultorias online</li>
                     </ul>
-                    <a href="registro.html" class="cta-button">Assinar agora</a> <!-- Redireciona para registro.html -->
-                </div>
+                    <a href="registro.html" class="cta-button">Assinar agora</a> </div>
                 
-                <!-- Card do Plano Anual -->
                 <div class="pricing-card">
                     <h3>Anual</h3>
                     <div class="price">R$ 750<span>/ano</span></div>
@@ -145,13 +175,11 @@
                         <li>✔ 12 consultorias online</li>
                         <li>✔ Acesso a conteúdos exclusivos</li>
                     </ul>
-                    <a href="registro.html" class="cta-button">Assinar agora</a> <!-- Redireciona para registro.html -->
-                </div>
+                    <a href="registro.html" class="cta-button">Assinar agora</a> </div>
             </div>
         </div>
     </section>
 
-    <!-- Rodapé da página -->
     <footer id="contact">
         <p>© 2025 FitAdapt - Todos os direitos reservados</p>
         <p>contato@fitadapt.com.br | (55) 83 9999-9999 </p>
