@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitAdapt - Artigos e Dicas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Open+Sans:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Estilos específicos para a página de artigos */
+        .articles-section {
+            padding: 4rem 1rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .articles-section h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.5rem;
+            color: #333;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .article-card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            margin-bottom: 2.5rem;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .article-card h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.8rem;
+            color: #444;
+            margin-bottom: 1rem;
+        }
+
+        .article-card p {
+            font-family: 'Open Sans', sans-serif;
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #666;
+            margin-bottom: 1.5rem;
+            text-align: justify;
+        }
+
+        .article-card .read-more {
+            background-color: #6a11cb;
+            background-image: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: opacity 0.3s ease;
+            align-self: flex-end; /* Alinha o botão à direita */
+        }
+
+        .article-card .read-more:hover {
+            opacity: 0.9;
+        }
+
+        /* Estilos para a navegação na área logada */
+        .user-header nav ul {
+            display: flex;
+            gap: 20px;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .user-header nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 8px 15px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        .user-header nav ul li a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Ajustes para o header da área logada */
+        .user-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: #6a11cb;
+            
+            color: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .user-header .logo {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+        }
+
+        .user-header .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-header .user-info span {
+            font-size: 1rem;
+        }
+
+        .user-header .user-avatar {
+            width: 40px;
+            height: 40px;
+            background-color: #f0f0f0;
+            color: #2575fc;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .user-header .small-button {
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            border-radius: 8px;
+            background-color: #f44336; /* Cor para o botão de sair */
+            background-image: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .user-header .small-button:hover {
+            background-color: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+    <header class="user-header">
+        <a href="index.html" class="logo">FitAdapt</a>
+        <nav>
+            <ul>
+                <li><a href="arealogad.html">Meu Plano</a></li>
+                <li><a href="artigos.html">Artigos e Dicas</a></li>
+            </ul>
+        </nav>
+        <div class="user-info">
+            <span>Olá, <strong id="user-nome"></strong></span>
+            <div class="user-avatar" id="user-avatar-char">U</div>
+            <button id="logout-button" class="cta-button small-button">Sair</button>
+        </div>
+    </header>
+
+    <main class="articles-section">
+        <h1>Artigos e Dicas de Bem-Estar</h1>
+        <p class="subtitle" style="text-align: center; margin-bottom: 3rem;">Conteúdo exclusivo para você se manter informado e motivado.</p>
+        
+        <div id="articles-container">
+            <!-- Artigos serão carregados aqui pelo JavaScript -->
+            <p style="text-align: center;">Carregando artigos...</p>
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2023 FitAdapt - Todos os direitos reservados</p>
+        <p>contato@fitadapt.com.br | (55) 83 9999-9999 </p>
+    </footer>
+
+    <script type="module">
+        // Importa as instâncias do Firebase do arquivo compartilhado
+        import { auth, db } from './firebase-init.js';
+        // Importa módulos Firebase específicos necessários para esta página
+        import { onAuthStateChanged, signOut, updateProfile } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js';
+        import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js';
+
+        // Estrutura de dados para os artigos
+        const articles = [
+            {
+                id: 'nutricao-basica',
+                title: 'Dicas de Nutrição Básica para Todos',
+                summary: 'Descubra como uma alimentação equilibrada pode transformar sua energia e bem-estar, com dicas simples para o dia a dia.',
+                content: `
+                    <p>Uma alimentação saudável é a base para qualquer programa de fitness, especialmente para quem busca adaptação ou reabilitação. Não se trata de dietas restritivas, mas sim de escolhas inteligentes e consistentes.</p>
+                    <h3>Priorize Alimentos Naturais</h3>
+                    <p>Opte por alimentos integrais, frutas, vegetais, proteínas magras e grãos. Eles fornecem os nutrientes essenciais que seu corpo precisa para funcionar bem e se recuperar dos exercícios.</p>
+                    <h3>Hidrate-se Constantemente</h3>
+                    <p>A água é vital para todas as funções corporais. Mantenha uma garrafa de água por perto e beba ao longo do dia, especialmente antes, durante e depois dos treinos.</p>
+                    <h3>Planeje Suas Refeições</h3>
+                    <p>Ter um plano ajuda a evitar escolhas impulsivas e menos saudáveis. Prepare suas refeições com antecedência ou tenha opções nutritivas prontas para consumo.</p>
+                    <h3>Ouça Seu Corpo</h3>
+                    <p>Preste atenção aos sinais de fome e saciedade. Coma devagar e saboreie seus alimentos. Evite comer por tédio ou estresse.</p>
+                    <p>Lembre-se: pequenas mudanças fazem uma grande diferença a longo prazo. Consulte sempre um profissional de saúde ou nutricionista para um plano alimentar personalizado.</p>
+                `
+            },
+            {
+                id: 'saude-mental',
+                title: 'Cuidados com a Saúde Mental no Dia a Dia',
+                summary: 'Entenda a importância da saúde mental e como pequenas ações podem fazer uma grande diferença no seu bem-estar emocional.',
+                content: `
+                    <p>A saúde mental é tão importante quanto a saúde física. Em um mundo agitado, cuidar da mente é fundamental para uma vida equilibrada e plena. Aqui estão algumas dicas práticas:</p>
+                    <h3>Pratique a Atenção Plena (Mindfulness)</h3>
+                    <p>Dedique alguns minutos do dia para focar no presente. Observe sua respiração, seus pensamentos e sensações sem julgamento. Isso pode reduzir o estresse e aumentar a clareza mental.</p>
+                    <h3>Mantenha Conexões Sociais</h3>
+                    <p>Interaja com amigos e familiares. O apoio social é um pilar da saúde mental. Mesmo que seja uma chamada de vídeo ou uma breve conversa, manter-se conectado faz a diferença.</p>
+                    <h3>Durma Bem</h3>
+                    <p>Priorize um sono de qualidade. A privação do sono afeta diretamente o humor, a concentração e a capacidade de lidar com o estresse. Crie uma rotina relaxante antes de dormir.</p>
+                    <h3>Gerencie o Estresse</h3>
+                    <p>Identifique o que causa estresse em sua vida e encontre formas saudáveis de lidar com isso. Pode ser através de exercícios físicos, meditação, hobbies ou conversas com alguém de confiança.</p>
+                    <h3>Busque Ajuda Profissional</h3>
+                    <p>Não hesite em procurar um psicólogo ou terapeuta se estiver a sentir dificuldades persistentes. Cuidar da saúde mental é um ato de coragem e autocuidado.</p>
+                `
+            },
+            {
+                id: 'manter-motivacao',
+                title: 'Como Manter a Motivação nos Treinos e na Vida',
+                summary: 'Descubra estratégias eficazes para manter a chama da motivação acesa, superando desafios e alcançando seus objetivos de forma consistente.',
+                content: `
+                    <p>Manter a motivação, seja nos treinos ou em qualquer área da vida, é um desafio comum. A boa notícia é que a motivação não é algo fixo; ela pode ser cultivada e renovada. Veja como:</p>
+                    <h3>Defina Metas Claras e Realistas</h3>
+                    <p>Tenha objetivos específicos e alcançáveis. Em vez de "quero ser mais ativo", defina "quero caminhar 30 minutos, 3 vezes por semana". Metas claras são mais fáceis de monitorar e celebrar.</p>
+                    <h3>Celebre Pequenas Vitórias</h3>
+                    <p>Reconheça e celebre cada passo do seu progresso, por menor que seja. Isso reforça o comportamento positivo e recarrega sua motivação para continuar.</p>
+                    <h3>Encontre Seu "Porquê"</h3>
+                    <p>Conecte-se com a razão mais profunda pela qual você começou. É pela saúde? Pela família? Pela independência? Lembre-se constantemente do seu propósito.</p>
+                    <h3>Varie Seus Treinos</h3>
+                    <p>A rotina pode levar ao tédio. Experimente novos exercícios, diferentes ambientes ou até mesmo um novo horário. A novidade pode reacender o interesse.</p>
+                    <h3>Busque Apoio</h3>
+                    <p>Compartilhe seus objetivos com amigos, familiares ou a comunidade FitAdapt. Ter alguém para te apoiar ou treinar junto pode ser um grande impulsionador.</p>
+                    <h3>Seja Gentil Consigo Mesmo</h3>
+                    <p>Haverá dias em que a motivação estará baixa. Não se culpe. Permita-se um descanso, mas volte à rotina no dia seguinte. A consistência é mais importante que a perfeição.</p>
+                `
+            }
+        ];
+
+        // Função para exibir os artigos
+        function displayArticles() {
+            const articlesContainer = document.getElementById('articles-container');
+            articlesContainer.innerHTML = ''; // Limpa o conteúdo anterior
+
+            articles.forEach(article => {
+                const articleCard = document.createElement('div');
+                articleCard.classList.add('article-card');
+                articleCard.innerHTML = `
+                    <h2>${article.title}</h2>
+                    <p>${article.summary}</p>
+                    <a href="artigo-detalhe.html?id=${article.id}" class="read-more">Ler Mais</a>
+                `;
+                articlesContainer.appendChild(articleCard);
+            });
+        }
+
+        // Lógica de autenticação e redirecionamento
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                // Atualiza as informações do usuário no cabeçalho
+                const userNameElement = document.getElementById('user-nome');
+                if (userNameElement) {
+                    userNameElement.textContent = user.displayName || user.email.split('@')[0];
+                }
+                const userAvatarCharElement = document.getElementById('user-avatar-char');
+                if (userAvatarCharElement) {
+                    userAvatarCharElement.textContent = user.displayName ? user.displayName.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase();
+                }
+
+                const userQuestionnaireRef = doc(db, "user_questionnaires", user.uid);
+                const userQuestionnaireSnap = await getDoc(userQuestionnaireRef);
+
+                // NOVO: Verifica se o usuário tem um plano pago E se o questionário existe
+                if (!userQuestionnaireSnap.exists() || userQuestionnaireSnap.data().hasPaid !== true) {
+                    window.location.href = 'pagamento.html';
+                } else if (userQuestionnaireSnap.exists() && !userQuestionnaireSnap.data().objetivo) {
+                    // Se pagou, mas não preencheu o questionário, redireciona para o questionário
+                    window.location.href = 'questionario.html';
+                } else {
+                    // Se está logado, pagou e preencheu o questionário, exibe os artigos
+                    displayArticles();
+                }
+            } else {
+                window.location.href = 'login.html'; // Redireciona para login se não estiver autenticado
+            }
+        });
+
+        // Lógica de Logout
+        document.addEventListener('DOMContentLoaded', () => {
+            const logoutButton = document.getElementById('logout-button');
+            if (logoutButton) {
+                logoutButton.addEventListener('click', async () => {
+                    try {
+                        await signOut(auth);
+                    } catch (error) {
+                        alert(`Erro ao fazer logout: ${error.message}`);
+                        console.error('Erro de logout:', error);
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

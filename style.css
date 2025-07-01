@@ -19,10 +19,10 @@ h3,
 .logo {
     font-family: 'Poppins', sans-serif;
     text-decoration: none;
-    color: #ddd;
+    color: #ffffff; /* Ajustado para ser visível no fundo claro padrão */
 }
 
-/* Cabeçalho */
+/* Cabeçalho (Estilos gerais, serão sobrescritos por .user-header em arealogad) */
 header {
     background: linear-gradient(135deg, #087234, #02fdd3);
     color: white;
@@ -41,7 +41,7 @@ header {
     opacity: 0.9;
 }
 
-/* Navegação */
+/* Navegação (Estilos gerais, serão sobrescritos por .user-header nav em arealogad) */
 nav {
     background: linear-gradient(135deg, #087234, #02fdd3);
     padding: 1rem;
@@ -98,19 +98,23 @@ nav ul li a {
     margin: 0 auto 2rem;
 }
 
+/* Botão CTA (Call to Action) - Padrão */
 .cta-button {
     display: inline-block;
-    background-color: #08e792;
+    background-color: #087234; /* Cor sólida para o botão padrão */
+    background-image: linear-gradient(135deg, #087234, #02fdd3); /* Gradiente para o botão padrão */
     color: white;
     padding: 0.8rem 2rem;
     border-radius: 5px;
     text-decoration: none;
     font-weight: bold;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, opacity 0.3s;
+    border: none; /* Garante que não há borda padrão */
+    cursor: pointer;
 }
 
 .cta-button:hover {
-    background-color: #3a5a9c;
+    opacity: 0.9;
 }
 
 /* Seção Funcionalidades */
@@ -390,14 +394,15 @@ footer p {
     }
 }
 
-/* Estilos da Área Logada */
+/* Estilos da Área Logada (Sobrescrições e Adições) */
 .user-header {
-    background: linear-gradient(135deg, #087234, #02fdd3);
+    background: linear-gradient(135deg, #087234, #02fdd3); /* Cores padrão do gradiente */
     color: white;
     padding: 1rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1); /* Adicionado box-shadow para consistência */
 }
 
 .user-info {
@@ -410,11 +415,13 @@ footer p {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background-color: #4b6cb7;
+    background-color: #f0f0f0; /* Fundo claro para o avatar */
+    color: #087234; /* Cor do texto do avatar, alinhada com o gradiente */
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: bold;
+    font-size: 1.2rem; /* Ajuste de tamanho para consistência */
 }
 
 .workout-plan {
@@ -431,11 +438,11 @@ footer p {
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Alterações AQUI: O novo layout para os cards de exercício */
+/* Layout para os cards de exercício */
 .exercise-card {
-    display: block; /* Alterado para empilhar os elementos */
+    display: block;
     margin: 1.5rem 0;
-    padding: 1rem; /* Adicionado padding interno */
+    padding: 1rem;
     border-radius: 8px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     background-color: white;
@@ -443,29 +450,28 @@ footer p {
 
 .exercise-video {
     position: relative;
-    padding-bottom: 56.25%; /* Mantém a proporção 16:9 */
+    padding-bottom: 56.25%; /* Proporção 16:9 */
     height: 0;
     overflow: hidden;
     border-radius: 8px;
-    margin-bottom: 1rem; /* Adiciona espaço abaixo do vídeo */
+    margin-bottom: 1rem;
 }
 
 .exercise-video iframe {
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%; /* Vídeo ocupa 100% da largura do contêiner */
+    width: 100%;
     height: 100%;
     border-radius: 8px;
 }
 
 .exercise-details {
-    /* Não precisa de flex aqui */
-    padding: 0 0.5rem; /* Adicionado padding lateral para as informações */
+    padding: 0 0.5rem;
 }
 
 .exercise-details h3 {
-    color: #4b6cb7;
+    color: #4b6cb7; /* Mantido o azul para contraste com o verde/azul */
     margin-bottom: 0.5rem;
 }
 
@@ -506,11 +512,6 @@ footer p {
     background-color: #f0f0f0;
 }
 
-.google-button img {
-    width: 20px;
-    height: 20px;
-}
-
 .divider {
     text-align: center;
     margin: 20px 0;
@@ -544,7 +545,7 @@ footer p {
     position: relative;
 }
 
-/* Estilos para a nova barra de progresso registro */
+/* Estilos para a nova barra de progresso */
 .progress-container {
     width: 80%;
     max-width: 600px;
@@ -563,8 +564,8 @@ footer p {
 .progress-bar-fill {
     height: 100%;
     width: 0%;
-    background-color: #6a11cb;
-    background-image: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
+    background-color: #087234; /* Cor inicial do gradiente */
+    background-image: linear-gradient(135deg, #087234, #02fdd3);
     border-radius: 25px;
     transition: width 0.5s ease-in-out;
     position: absolute;
@@ -583,28 +584,155 @@ footer p {
 
 /* Estilo para o botão "Marcar como concluído" */
 .mark-as-done-button {
-    /* ... seus estilos originais do botão ... */
     cursor: pointer;
-    /* Define o cursor como ponteiro por padrão */
     transition: background-color 0.3s ease;
 }
 
 /* Estilo para o botão quando a ação é concluída */
 .mark-as-done-button.completed {
     background-color: #4CAF50;
-    /* Um verde que indica sucesso */
     color: white;
-    /* A CORREÇÃO PRINCIPAL está aqui: */
     cursor: pointer;
-    /* Garante que o cursor seja um ponteiro para indicar que é clicável */
     pointer-events: auto;
-    /* Garante que o elemento seja clicável (se estiver desativado por algum motivo) */
 }
 
 /* Opcional: Estilo ao passar o mouse por cima do botão concluído para reforçar a ação */
 .mark-as-done-button.completed:hover {
     background-color: #3e8e41;
-    /* Um tom de verde mais escuro ao passar o mouse */
     cursor: pointer;
-    /* Mantém o cursor como ponteiro */
+}
+
+/* Estilos para a área de redirecionamento para artigos */
+.articles-promo-card {
+    background-color: #e6ffe6; /* Um verde claro suave */
+    border: 1px solid #c3e6cb; /* Borda verde clara */
+    border-radius: 12px;
+    padding: 2rem;
+    margin: 2rem auto;
+    max-width: 800px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.articles-promo-card h2 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.8rem;
+    color: #155724; /* Cor mais escura para o título (verde escuro) */
+    margin-bottom: 0.5rem;
+}
+
+.articles-promo-card p {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 1rem;
+    color: #555;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+}
+
+.articles-promo-card .cta-button {
+    padding: 12px 25px;
+    font-size: 1rem;
+    background-color: #087234;
+    background-image: linear-gradient(135deg, #087234, #02fdd3);
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: opacity 0.3s ease;
+}
+
+.articles-promo-card .cta-button:hover {
+    opacity: 0.9;
+}
+
+
+/* Estilos para o Modo Escuro (Mantidos como estão) */
+body.dark-mode {
+    background-color: #1a1a2e; /* Fundo escuro */
+    color: #e0e0e0; /* Texto claro */
+}
+
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode h3,
+body.dark-mode .logo,
+body.dark-mode .subtitle {
+    color: #e0e0e0; /* Títulos e subtítulos claros no modo escuro */
+}
+
+body.dark-mode header,
+body.dark-mode footer {
+    background: #0f0f1d; /* Fundo mais escuro para cabeçalho/rodapé */
+    background-image: none; /* Remove gradiente no modo escuro */
+}
+
+body.dark-mode .user-header {
+    background: #0f0f1d;
+    background-image: none;
+}
+
+/* CORREÇÃO AQUI: Estilo para os links de navegação no modo escuro */
+body.dark-mode .user-header nav ul li a {
+    color: #c0c0c0; /* Cor mais clara para os links no modo escuro */
+}
+body.dark-mode .user-header nav ul li a:hover {
+    background-color: rgba(255, 255, 255, 0.1); /* Mantém o hover sutil */
+}
+
+
+body.dark-mode .day-section,
+body.dark-mode .exercise-card {
+    background-color: #2e2e4a; /* Fundo mais escuro para cards */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+body.dark-mode .exercise-details h3 {
+    color: #90caf9; /* Cor mais clara para títulos de exercícios */
+}
+
+body.dark-mode .exercise-meta .badge {
+    background-color: #4a4a6e; /* Fundo mais escuro para badges */
+    color: #e0e0e0;
+}
+
+body.dark-mode .articles-promo-card {
+    background-color: #2e2e4a;
+    border-color: #4a4a6e;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+body.dark-mode .articles-promo-card h2 {
+    color: #e0e0e0;
+}
+
+body.dark-mode .articles-promo-card p {
+    color: #c0c0c0;
+}
+
+/* Estilo para o botão de toggle do modo escuro */
+.dark-mode-toggle {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    padding: 8px 15px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.dark-mode-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Ícone de sol/lua (usando emojis ou Font Awesome, por exemplo) */
+.dark-mode-toggle .icon {
+    font-size: 1.2em;
 }
