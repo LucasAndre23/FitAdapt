@@ -1,3 +1,73 @@
+/* ... (Seus estilos existentes para outras seções, como .faq-section, .faq-item, etc.) ... */
+
+/* Estilos para o cabeçalho e rodapé (manter do seu CSS existente) */
+/* CORREÇÃO AQUI: Altere o justify-content para space-between */
+.user-header {
+    background-color: #2c3e50; /* Exemplo de cor para o cabeçalho */
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between; /* ISSO É O CRUCIAL: Empurra os itens para as extremidades */
+    align-items: center;
+}
+
+.user-header .logo {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #ffffff;
+    text-decoration: none;
+    /* Adicione um flex-grow se quiser que o logo ocupe mais espaço quando possível,
+       mas geralmente não é necessário para logos se justify-content: space-between; já estiver fazendo o trabalho. */
+}
+
+/* Adicione (ou certifique-se que já exista) os estilos para .user-info dentro de .user-header */
+/* Estes estilos já foram sugeridos anteriormente, mas são importantes para o alinhamento. */
+.user-header .user-info {
+    display: flex; /* Para alinhar o "Olá, nome", avatar e botão Sair */
+    align-items: center;
+    gap: 15px; /* Espaçamento entre os itens do user-info */
+    color: white; /* Cor do texto "Olá, nome" */
+    font-family: 'Open Sans', sans-serif;
+}
+
+.user-header .user-info strong {
+    font-weight: 700;
+}
+
+.user-header .user-avatar-link {
+    text-decoration: none;
+}
+
+.user-header .user-avatar {
+    width: 40px;
+    height: 40px;
+    background-color: #f0f0f0; /* Cor de fundo do círculo do avatar */
+    color: #2575fc; /* Cor da letra do avatar */
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+.user-header .cta-button.small-button {
+    padding: 8px 15px;
+    font-size: 0.9rem;
+    border-radius: 8px;
+    background-color: #f44336; /* Cor do botão Sair */
+    border: none;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.user-header .cta-button.small-button:hover {
+    background-color: #d32f2f;
+}
+
+
+/* Outros estilos para .faq-section, .faq-item, etc. que você já tem */
 .faq-section {
     padding: 4rem 1rem;
     max-width: 900px;
@@ -65,25 +135,19 @@
     padding-bottom: 1.5rem; /* Espaçamento inferior para o parágrafo dentro da resposta */
 }
 
+.faq-answer p a {
+    color: #007bff; /* Cor azul para destacar o link */
+    text-decoration: none; /* O LINK NÃO TERÁ SUBLINHADO */
+    cursor: pointer; /* Garante que o cursor mude ao passar por cima */
+}
+
+.faq-answer p a:hover {
+    color: #0056b3; /* Cor mais escura ao passar o mouse */
+    text-decoration: none; /* TAMBÉM NÃO TERÁ SUBLINHADO AO PASSAR O MOUSE */
+}
+
 .faq-answer.active {
     max-height: 300px; /* Ajuste conforme o conteúdo esperado da resposta */
     padding-top: 1rem;
     padding-bottom: 1.5rem;
-}
-
-/* Estilos para o cabeçalho e rodapé (manter do seu CSS existente) */
-.user-header {
-    background-color: #2c3e50; /* Exemplo de cor para o cabeçalho */
-    padding: 1rem 2rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.user-header .logo {
-    font-family: 'Poppins', sans-serif;
-    font-size: 2rem;
-    font-weight: 700;
-    color: #ffffff;
-    text-decoration: none;
 }

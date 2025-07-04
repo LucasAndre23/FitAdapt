@@ -9,11 +9,91 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Open+Sans:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="faq.css">
+
+    <script type="module">
+        import { auth, db } from './firebase-init.js'; 
+        import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js';
+        import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const headerElement = document.querySelector('header');
+
+            // --- Conteúdo do cabeçalho para usuário logado (SEM navegação) ---
+            const userHeaderContent = `
+                <a href="index.html" class="logo">FitAdapt</a>
+                <div class="user-info">
+                    <span>Olá, <strong id="user-nome"></strong></span>
+                    <a href="perfil.html" class="user-avatar-link">
+                        <div class="user-avatar" id="user-avatar-char">U</div>
+                    </a>
+                    <button id="logout-button" class="cta-button small-button">Sair</button>
+                </div>
+            `;
+
+            // --- Conteúdo do cabeçalho padrão (não logado) ---
+            const defaultHeaderContent = `
+                <a href="index.html" class="logo">FitAdapt</a>
+            `;
+
+            if (headerElement) {
+                onAuthStateChanged(auth, async (user) => { 
+                    if (user) {
+                        // Se o usuário está logado, injeta o conteúdo de cabeçalho para usuários logados
+                        headerElement.innerHTML = userHeaderContent;
+                        headerElement.classList.add('user-header'); 
+
+                        // Preenche o nome e avatar do usuário
+                        const userName = user.displayName || (user.email ? user.email.split('@')[0] : 'Usuário');
+                        const userNameElement = document.getElementById('user-nome');
+                        const userAvatarCharElement = document.getElementById('user-avatar-char');
+                        
+                        if (userNameElement) {
+                            userNameElement.textContent = userName;
+                        }
+                        if (userAvatarCharElement) {
+                            userAvatarCharElement.textContent = userName.charAt(0).toUpperCase();
+                        }
+
+                        // Adiciona o listener de logout
+                        const logoutButton = document.getElementById('logout-button');
+                        if (logoutButton) {
+                            logoutButton.addEventListener('click', async () => {
+                                try {
+                                    await signOut(auth);
+                                    window.location.href = 'login.html'; 
+                                } catch (error) {
+                                    alert(`Erro ao fazer logout: ${error.message}`);
+                                    console.error('Erro de logout:', error);
+                                }
+                            });
+                        }
+
+                        // Lógica de redirecionamento (mantida da versão anterior, se a FAQ for restrita)
+                        try {
+                            const userQuestionnaireRef = doc(db, "user_questionnaires", user.uid);
+                            const userQuestionnaireSnap = await getDoc(userQuestionnaireRef);
+
+                            if (!userQuestionnaireSnap.exists() || userQuestionnaireSnap.data().hasPaid !== true) {
+                                window.location.href = 'pagamento.html';
+                            } else if (userQuestionnaireSnap.exists() && !userQuestionnaireSnap.data().objetivo) {
+                                window.location.href = 'questionario.html';
+                            }
+                        } catch (error) {
+                            console.error("Erro ao verificar status do usuário:", error);
+                        }
+
+                    } else {
+                        // Se não estiver logado, injeta o conteúdo de cabeçalho padrão
+                        headerElement.innerHTML = defaultHeaderContent;
+                        headerElement.classList.remove('user-header'); 
+                    }
+                });
+            }
+        });
+    </script>
 </head>
 <body>
-    <header class="user-header">
-        <a href="index.html" class="logo">FitAdapt</a>
-    </header>
+    <header></header> 
 
     <main class="faq-section">
         <h2>Perguntas Frequentes (FAQ)</h2>
@@ -56,7 +136,7 @@
         <div class="faq-item">
             <div class="faq-question">Qual é o custo do FitAdapt?</div>
             <div class="faq-answer">
-                <p>Oferecemos diferentes planos de assinatura para atender às suas necessidades. Visite nossa página inicial para mais detalhes ou entre em contato para um orçamento personalizado.</p>
+                <p>Oferecemos diferentes planos de assinatura para atender às suas necessidades. Visite nossa <a href="index.html#planos">página inicial</a> para mais detalhes ou entre em contato para um orçamento personalizado.</p>
             </div>
         </div>
 

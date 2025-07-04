@@ -736,3 +736,17 @@ body.dark-mode .articles-promo-card p {
 .dark-mode-toggle .icon {
     font-size: 1.2em;
 }
+
+/* ---------------------------------------------- */
+
+.user-avatar-link {
+    display: inline-block; /* Or 'block' depending on your layout needs */
+    text-decoration: none; /* Removes underline from the link */
+    color: inherit; /* Inherits text color from parent */
+    cursor: pointer; /* Indicates it's clickable */
+}
+
+/* You might want to add hover effects too */
+.user-avatar-link:hover .user-avatar {
+    opacity: 0.8; /* Example hover effect */
+}

@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitAdapt - Meu Perfil</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Open+Sans:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Estilos base da página (ajustados do original) */
+        body {
+            font-family: 'Open Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+
+        /* Estilos para o header da área logada (mantidos do original) */
+        .user-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #087234, #02fdd3);
+            color: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .user-header .logo {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+        }
+        .user-header nav ul {
+            display: flex;
+            gap: 20px;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .user-header nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 8px 15px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        .user-header nav ul li a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .user-header .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-header .user-info span {
+            font-size: 1rem;
+        }
+
+        /* NOVIDADE: Estilo para o link do avatar */
+        .user-header .user-avatar-link {
+            text-decoration: none; /* Remove sublinhado padrão do link */
+            color: inherit; /* Garante que a cor do texto seja herdada */
+        }
+
+        .user-header .user-avatar {
+            width: 40px;
+            height: 40px;
+            background-color: #f0f0f0;
+            color: #2575fc; /* Cor azul para o ícone */
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+            cursor: pointer; /* Indica que é clicável */
+            transition: transform 0.2s ease-in-out;
+        }
+        .user-header .user-avatar:hover {
+            transform: scale(1.1); /* Efeito de zoom ao passar o mouse */
+        }
+
+        .user-header .small-button {
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            border-radius: 8px;
+            background-color: #f44336;
+            background-image: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .user-header .small-button:hover {
+            background-color: #d32f2f;
+        }
+
+        /* --- NOVOS ESTILOS PARA A PÁGINA DE PERFIL --- */
+        .profile-section {
+            padding: 4rem 1rem;
+            max-width: 600px; /* Largura ajustada para o formulário */
+            margin: 2rem auto; /* Mais espaço acima e centralizado */
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            text-align: center; /* Centraliza o título */
+        }
+
+        .profile-section h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 2rem;
+        }
+
+        .profile-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem; /* Espaçamento entre os campos */
+            align-items: stretch; /* Garante que os inputs se estiquem */
+        }
+
+        .form-group {
+            text-align: left; /* Alinha os rótulos à esquerda */
+            width: 100%;
+        }
+
+        .form-group label {
+            display: block; /* Cada label em uma nova linha */
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #555;
+            font-size: 1rem;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group select,
+        .form-group textarea { /* Adicionado textarea */
+            width: 100%; /* Ocupa a largura total do grupo */
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            box-sizing: border-box; /* Inclui padding e borda no width */
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input[type="text"]:focus,
+        .form-group input[type="email"]:focus,
+        .form-group select:focus,
+        .form-group textarea:focus { /* Adicionado textarea */
+            border-color: #087234; /* Cor da borda ao focar */
+            outline: none; /* Remove o contorno padrão do navegador */
+        }
+
+        /* Estilos para Radio Group */
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 0.5rem;
+            flex-wrap: wrap; /* Permite quebrar em várias linhas se houver muitas opções */
+        }
+
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 0; /* Remove margin-bottom padrão */
+            font-weight: 400; /* Menos negrito que os títulos dos campos */
+        }
+
+        /* Estilo para o container de agendamento */
+        .agendamento-container {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            background-color: #f9f9f9;
+        }
+
+        .agendamento-container h3 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5rem;
+            color: #333;
+            margin-top: 0;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .agendamento-container p.subtitle {
+            text-align: center;
+            margin-bottom: 1rem;
+            color: #666;
+        }
+
+        .agendamento-container .form-group {
+            margin-bottom: 1rem; /* Espaçamento entre os campos internos */
+        }
+        
+        .hidden {
+            display: none;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background-color: #11cb65;
+            background-image: linear-gradient(to right, #30cb11 0%, #045f50 100%);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: opacity 0.3s ease, transform 0.2s ease;
+            border: none; /* Remove a borda padrão do botão */
+            cursor: pointer;
+            width: auto; /* Permite que o botão se ajuste ao conteúdo */
+            margin-top: 1rem; /* Espaço acima do botão de salvar */
+        }
+
+        .cta-button:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .reset-password-button {
+            background-image: linear-gradient(to right, #007bff 0%, #0056b3 100%); /* Um tom de azul */
+        }
+        .reset-password-button:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        /* Mensagens de feedback */
+        .message {
+            margin-top: 1rem;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Botão de Modo Escuro */
+        .dark-mode-toggle {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        .dark-mode-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .dark-mode-toggle .icon {
+            font-size: 1.2rem;
+            line-height: 1; /* Alinha verticalmente o ícone */
+        }
+
+        /* Estilos do Modo Escuro */
+        body.dark-mode {
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .user-header {
+            background: linear-gradient(135deg, #004d20, #008f7a); /* Tons mais escuros */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        body.dark-mode .profile-section {
+            background-color: #2b2b2b;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        body.dark-mode .profile-section h1 {
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .form-group label {
+            color: #c0c0c0;
+        }
+
+        body.dark-mode .form-group input[type="text"],
+        body.dark-mode .form-group input[type="email"],
+        body.dark-mode .form-group select,
+        body.dark-mode .form-group textarea { /* Adicionado textarea */
+            background-color: #3a3a3a;
+            border-color: #555;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .form-group input[type="text"]:focus,
+        body.dark-mode .form-group input[type="email"]:focus,
+        body.dark-mode .form-group select:focus,
+        body.dark-mode .form-group textarea:focus { /* Adicionado textarea */
+            border-color: #02fdd3; /* Cor mais clara para destaque */
+        }
+
+        body.dark-mode .agendamento-container {
+            background-color: #3a3a3a;
+            border-color: #555;
+        }
+
+        body.dark-mode .agendamento-container h3 {
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .agendamento-container p.subtitle {
+            color: #c0c0c0;
+        }
+
+        body.dark-mode footer {
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            border-top: 1px solid #3a3a3a;
+        }
+    </style>
+</head>
+<body>
+    <header class="user-header">
+        <a href="index.html" class="logo">FitAdapt</a>
+        <nav>
+            <ul>
+                <li><a href="arealogad.html">Meu Plano</a></li>
+                <li><a href="artigos.html">Artigos e Dicas</a></li>
+            </ul>
+        </nav>
+        <div class="user-info">
+            <button id="dark-mode-toggle" class="dark-mode-toggle">
+                <span class="icon">☀️</span> Modo Claro
+            </button>
+            <span>Olá, <strong id="user-nome"></strong></span>
+            <a href="perfil.html" class="user-avatar-link">
+                <div class="user-avatar" id="user-avatar-char">U</div>
+            </a>
+            <button id="logout-button" class="cta-button small-button">Sair</button>
+        </div>
+    </header>
+
+    <main class="profile-section">
+        <h1>Meu Perfil</h1>
+        <form id="profile-form" class="profile-form">
+            <div class="form-group">
+                <label for="profile-name">Nome:</label>
+                <input type="text" id="profile-name" required>
+            </div>
+            <div class="form-group">
+                <label for="profile-email">Email:</label>
+                <input type="email" id="profile-email" readonly disabled>
+            </div>
+            <div class="form-group">
+                <label for="profile-plan">Plano Atual:</label>
+                <select id="profile-plan">
+                    <option value="mensal">Mensal</option>
+                    <option value="trimestral">Trimestral</option>
+                    <option value="anual">Anual</option>
+                </select>
+                <small>Seu plano é exibido aqui e pode ser alterado se você tiver essa funcionalidade.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="objetivo-select">Qual seu principal objetivo?</label>
+                <select id="objetivo-select" required>
+                    <option value="">Selecione...</option>
+                    <option>Melhorar mobilidade</option>
+                    <option>Alívio de dores</option>
+                    <option>Condicionamento físico</option>
+                    <option>Reabilitação pós-lesão</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Possui alguma limitação física?</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="limitacao" value="sim" id="limitacao-sim"> Sim</label>
+                    <label><input type="radio" name="limitacao" value="nao" id="limitacao-nao"> Não</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="necessidades-textarea">Descreva brevemente suas necessidades:</label>
+                <textarea id="necessidades-textarea" rows="4" placeholder="Ex.: Artrose no joelho direito, hérnia de disco..."></textarea>
+            </div>
+
+            <div class="agendamento-container">
+                <h3>Agendamento com Especialista</h3>
+                <p class="subtitle">Deseja marcar uma avaliação presencial gratuita com nosso especialista?</p>
+                
+                <div class="radio-group">
+                    <label><input type="radio" name="agendamento" value="sim" id="agendamento-sim-perfil"> Sim, quero agendar</label>
+                    <label><input type="radio" name="agendamento" value="nao" id="agendamento-nao-perfil"> Não, por enquanto</label>
+                </div>
+                
+                <div id="agendamento-fields-perfil" class="hidden">
+                    <div class="form-group">
+                        <label for="data-consulta">Data preferencial:</label>
+                        <input type="date" id="data-consulta" class="agendamento-field">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="horario-consulta">Horário preferencial:</label>
+                        <select id="horario-consulta" class="agendamento-field">
+                            <option value="">Selecione...</option>
+                            <option>08:00 - 10:00</option>
+                            <option>10:00 - 12:00</option>
+                            <option>14:00 - 16:00</option>
+                            <option>16:00 - 18:00</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="local-consulta">Local mais próximo:</label>
+                        <select id="local-consulta" class="agendamento-field">
+                            <option value="">Selecione...</option>
+                            <option>João Pessoa - PB</option>
+                            <option>Rio de Janeiro - RJ</option>
+                            <option>Belo Horizonte - MG</option>
+                            <option>Porto Alegre - RS</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="cta-button">Salvar Alterações</button>
+            <button type="button" id="reset-password-button" class="cta-button reset-password-button">Redefinir Senha</button>
+            <div id="message-area" class="message" style="display: none;"></div>
+        </form>
+    </main>
+
+    <footer>
+        <p>© 2025 FitAdapt - Todos os direitos reservados</p>
+        <p>contato@fitadapt.com.br | (55) 83 9999-9999 </p>
+    </footer>
+
+    <script type="module">
+        import { auth, db } from './firebase-init.js';
+        import { onAuthStateChanged, signOut, updateProfile, sendPasswordResetEmail } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js';
+        import { doc, getDoc, updateDoc } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js';
+
+        const profileNameInput = document.getElementById('profile-name');
+        const profileEmailInput = document.getElementById('profile-email');
+        const profilePlanSelect = document.getElementById('profile-plan');
+        const objetivoSelect = document.getElementById('objetivo-select');
+        const limitacaoSimRadio = document.getElementById('limitacao-sim');
+        const limitacaoNaoRadio = document.getElementById('limitacao-nao');
+        const necessidadesTextarea = document.getElementById('necessidades-textarea');
+        const agendamentoSimPerfilRadio = document.getElementById('agendamento-sim-perfil');
+        const agendamentoNaoPerfilRadio = document.getElementById('agendamento-nao-perfil');
+        const agendamentoFieldsPerfilDiv = document.getElementById('agendamento-fields-perfil');
+        const dataConsultaInput = document.getElementById('data-consulta');
+        const horarioConsultaSelect = document.getElementById('horario-consulta');
+        const localConsultaSelect = document.getElementById('local-consulta');
+
+        const profileForm = document.getElementById('profile-form');
+        const resetPasswordButton = document.getElementById('reset-password-button');
+        const messageArea = document.getElementById('message-area');
+        const userNameHeader = document.getElementById('user-nome');
+        const userAvatarCharHeader = document.getElementById('user-avatar-char');
+        const logoutButton = document.getElementById('logout-button');
+        const darkModeToggle = document.getElementById('dark-mode-toggle');
+
+        let currentUserUid = null; // Para armazenar o UID do usuário logado
+
+        // --- Funções de UI ---
+        function showMessage(type, text) {
+            messageArea.style.display = 'block';
+            messageArea.className = `message ${type}`;
+            messageArea.textContent = text;
+            setTimeout(() => {
+                messageArea.style.display = 'none';
+            }, 5000); // Esconde a mensagem após 5 segundos
+        }
+
+        // Lógica do Modo Escuro
+        function applyDarkModePreference() {
+            const isDarkMode = localStorage.getItem('dark-mode') === 'enabled';
+            if (isDarkMode) {
+                document.body.classList.add('dark-mode');
+                darkModeToggle.innerHTML = '<span class="icon">🌙</span> Modo Escuro';
+            } else {
+                document.body.classList.remove('dark-mode');
+                darkModeToggle.innerHTML = '<span class="icon">☀️</span> Modo Claro';
+            }
+        }
+
+        function toggleDarkMode() {
+            if (document.body.classList.contains('dark-mode')) {
+                localStorage.setItem('dark-mode', 'disabled');
+            } else {
+                localStorage.setItem('dark-mode', 'enabled');
+            }
+            applyDarkModePreference(); // Aplica a nova preferência imediatamente
+        }
+
+        // Lógica para mostrar/ocultar campos de agendamento no perfil
+        function toggleAgendamentoPerfilVisibility() {
+            if (agendamentoSimPerfilRadio.checked) {
+                agendamentoFieldsPerfilDiv.classList.remove('hidden');
+                // Campos de agendamento não são "required" aqui porque o usuário pode desmarcar
+                // e eles não devem ser obrigatórios para o salvamento do perfil geral.
+            } else {
+                agendamentoFieldsPerfilDiv.classList.add('hidden');
+            }
+        }
+
+        // Define a data mínima para o agendamento
+        function setMinDate() {
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            dataConsultaInput.min = tomorrow.toISOString().split('T')[0];
+        }
+
+        // --- Lógica de Autenticação e Carregamento de Dados ---
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUserUid = user.uid; // Define o UID do usuário
+                const userQuestionnaireRef = doc(db, "user_questionnaires", user.uid);
+                
+                // Verifica status de pagamento e questionário (igual às outras páginas)
+                const userQuestionnaireSnap = await getDoc(userQuestionnaireRef);
+                if (!userQuestionnaireSnap.exists() || userQuestionnaireSnap.data().hasPaid !== true) {
+                    window.location.href = 'pagamento.html';
+                    return; // Interrompe a execução
+                } else if (!userQuestionnaireSnap.data().objetivo) {
+                    // Se o questionário ainda não foi preenchido, redireciona para a página de questionário
+                    window.location.href = 'questionario.html';
+                    return; // Interrompe a execução
+                }
+
+                // Preenche os campos do formulário com os dados do usuário
+                profileNameInput.value = user.displayName || '';
+                profileEmailInput.value = user.email || '';
+
+                if (userQuestionnaireSnap.exists()) {
+                    const data = userQuestionnaireSnap.data();
+                    
+                    // Dados do Perfil
+                    profilePlanSelect.value = data.plano || ''; 
+
+                    // Dados do Questionário
+                    objetivoSelect.value = data.objetivo || '';
+                    if (data.limitacao === 'sim') {
+                        limitacaoSimRadio.checked = true;
+                    } else {
+                        limitacaoNaoRadio.checked = true;
+                    }
+                    necessidadesTextarea.value = data.necessidades || '';
+
+                    // Dados de Agendamento
+                    if (data.agendamento) {
+                        agendamentoSimPerfilRadio.checked = true;
+                        dataConsultaInput.value = data.agendamento.data || '';
+                        horarioConsultaSelect.value = data.agendamento.horario || '';
+                        localConsultaSelect.value = data.agendamento.local || '';
+                    } else {
+                        agendamentoNaoPerfilRadio.checked = true;
+                    }
+                    toggleAgendamentoPerfilVisibility(); // Atualiza a visibilidade com base nos dados carregados
+                }
+
+                // Atualiza o nome e o avatar no cabeçalho
+                const userName = user.displayName || (user.email ? user.email.split('@')[0] : 'Usuário');
+                if (userNameHeader) userNameHeader.textContent = userName;
+                if (userAvatarCharHeader) userAvatarCharHeader.textContent = userName.charAt(0).toUpperCase();
+
+            } else {
+                // Se não houver usuário logado, redireciona para a página de login
+                window.location.href = 'login.html';
+            }
+        });
+
+        // --- Lógica de Edição de Dados ---
+        profileForm.addEventListener('submit', async (e) => {
+            e.preventDefault(); // Impede o recarregamento da página
+
+            if (!currentUserUid) {
+                showMessage('error', 'Nenhum usuário logado para salvar alterações.');
+                return;
+            }
+
+            const newName = profileNameInput.value.trim();
+            const newPlan = profilePlanSelect.value;
+            const newObjetivo = objetivoSelect.value;
+            const newLimitacao = document.querySelector('input[name="limitacao"]:checked').value;
+            const newNecessidades = necessidadesTextarea.value.trim();
+            
+            let newAgendamento = null;
+            if (agendamentoSimPerfilRadio.checked) {
+                // Verifica se os campos de agendamento estão preenchidos se "sim" estiver marcado
+                if (!dataConsultaInput.value || !horarioConsultaSelect.value || !localConsultaSelect.value) {
+                    showMessage('error', 'Por favor, preencha todos os campos de agendamento ou selecione "Não".');
+                    return;
+                }
+                newAgendamento = {
+                    data: dataConsultaInput.value,
+                    horario: horarioConsultaSelect.value,
+                    local: localConsultaSelect.value
+                };
+            }
+
+            if (newName === '') {
+                showMessage('error', 'O nome não pode ser vazio.');
+                return;
+            }
+            if (newObjetivo === '') {
+                showMessage('error', 'Por favor, selecione seu objetivo.');
+                return;
+            }
+
+            try {
+                // Atualiza o nome no Firebase Authentication
+                await updateProfile(auth.currentUser, {
+                    displayName: newName
+                });
+
+                // Atualiza todos os dados no Firestore
+                const userQuestionnaireRef = doc(db, "user_questionnaires", currentUserUid);
+                await updateDoc(userQuestionnaireRef, {
+                    nome: newName,
+                    plano: newPlan,
+                    objetivo: newObjetivo,
+                    limitacao: newLimitacao,
+                    necessidades: newNecessidades,
+                    agendamento: newAgendamento,
+                    // Não atualiza o timestamp aqui para manter o original do questionário.
+                    // Se precisar, adicione um 'lastUpdatedAt: new Date().toISOString()'
+                });
+
+                // Atualiza o nome no cabeçalho imediatamente após o sucesso
+                if (userNameHeader) userNameHeader.textContent = newName;
+                if (userAvatarCharHeader) userAvatarCharHeader.textContent = newName.charAt(0).toUpperCase();
+
+                showMessage('success', 'Perfil e dados do questionário atualizados com sucesso!');
+            } catch (error) {
+                console.error('Erro ao salvar perfil:', error);
+                showMessage('error', `Erro ao salvar alterações: ${error.message}`);
+            }
+        });
+
+        // --- Lógica de Redefinição de Senha ---
+        resetPasswordButton.addEventListener('click', async () => {
+            const user = auth.currentUser;
+            if (user) {
+                try {
+                    await sendPasswordResetEmail(auth, user.email);
+                    showMessage('success', 'Um e-mail de redefinição de senha foi enviado para o seu endereço de e-mail.');
+                } catch (error) {
+                    console.error('Erro ao enviar e-mail de redefinição de senha:', error);
+                    showMessage('error', `Erro ao redefinir senha: ${error.message}`);
+                }
+            } else {
+                showMessage('error', 'Nenhum usuário logado para redefinir a senha.');
+            }
+        });
+
+        // --- Lógica de Logout e Inicialização ---
+        document.addEventListener('DOMContentLoaded', () => {
+            applyDarkModePreference(); // Aplica a preferência de modo escuro ao carregar a página
+            setMinDate(); // Define a data mínima para o campo de agendamento
+
+            // Listeners para mostrar/ocultar campos de agendamento
+            agendamentoSimPerfilRadio.addEventListener('change', toggleAgendamentoPerfilVisibility);
+            agendamentoNaoPerfilRadio.addEventListener('change', toggleAgendamentoPerfilVisibility);
+
+            // Listener para o botão de modo escuro
+            if (darkModeToggle) {
+                darkModeToggle.addEventListener('click', toggleDarkMode);
+            }
+
+            if (logoutButton) {
+                logoutButton.addEventListener('click', async () => {
+                    try {
+                        await signOut(auth);
+                        window.location.href = 'login.html'; // Redireciona para login após logout
+                    } catch (error) {
+                        alert(`Erro ao fazer logout: ${error.message}`);
+                        console.error('Erro de logout:', error);
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
