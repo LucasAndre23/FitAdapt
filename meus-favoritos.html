@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitAdapt - Meus Favoritos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Open+Sans:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Estilos específicos para a página de favoritos, se necessário */
+        .no-favorites-message {
+            text-align: center;
+            margin-top: 3rem;
+            font-size: 1.2rem;
+            color: #666;
+        }
+
+        /* Ajustes para o layout dos botões dentro do card */
+        .exercise-details .actions {
+            display: flex;
+            gap: 10px; /* Espaço entre os botões */
+            margin-top: 1rem;
+            align-items: center;
+        }
+
+        .favorite-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.8rem; /* Tamanho do ícone */
+            color: #ccc; /* Cor padrão da estrela (não favorita) */
+            transition: color 0.2s ease;
+            padding: 0; /* Remove padding padrão do botão */
+            line-height: 1; /* Alinha o ícone */
+        }
+
+        .favorite-button.favorited .icon {
+            color: #FFD700; /* Cor da estrela favorita (dourado) */
+        }
+
+        .favorite-button:hover .icon {
+            color: #FFD700; /* Cor ao passar o mouse */
+        }
+
+        /* Estilos para o modo escuro */
+        body.dark-mode .favorite-button {
+            color: #777; /* Cor da estrela não favorita no modo escuro */
+        }
+        body.dark-mode .favorite-button.favorited .icon {
+            color: #FFD700; /* Mantém o dourado para favorito no modo escuro */
+        }
+        body.dark-mode .favorite-button:hover .icon {
+            color: #FFD700;
+        }
+    </style>
+</head>
+<body>
+    <header class="user-header">
+        <a href="index.html" class="logo">FitAdapt</a>
+        <nav>
+            <ul>
+                <li><a href="arealogad.html">Meu Plano</a></li>
+                <li><a href="artigos.html">Artigos e Dicas</a></li>
+                <li><a href="meus-favoritos.html">Meus Favoritos</a></li>
+            </ul>
+        </nav>
+        <div class="user-info">
+            <button id="dark-mode-toggle" class="dark-mode-toggle">
+                <span class="icon">☀️</span> Modo Claro
+            </button>
+            <span>Olá, <strong id="user-nome"></strong></span>
+            <a href="perfil.html" class="user-avatar-link">
+                <div class="user-avatar" id="user-avatar-char">U</div>
+            </a>
+            <button id="logout-button" class="cta-button small-button">Sair</button>
+        </div>
+    </header>
+
+    <main class="workout-plan">
+        <h1>Meus Itens Favoritos</h1>
+        <p class="subtitle">Seus treinos e artigos salvos para acesso rápido.</p>
+        
+        <div id="favorites-list">
+            <p class="no-favorites-message" style="display: none;">Você ainda não favoritou nenhum item. Favorite treinos e artigos para vê-los aqui!</p>
+            <p style="text-align: center;" id="loading-favorites">Carregando seus favoritos...</p>
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2025 FitAdapt - Todos os direitos reservados</p>
+        <p>contato@fitadapt.com.br | (55) 83 9999-9999 </p>
+    </footer>
+
+    <script type="module">
+        // Importa as instâncias do Firebase do arquivo compartilhado
+        import { auth, db } from './firebase-init.js';
+        // Importa módulos Firebase específicos necessários para esta página
+        import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js';
+        import { doc, getDoc, updateDoc, arrayUnion, arrayRemove } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js';
+
+        // NOVO: Importa os dados de conteúdo e a função de busca
+        import { findItemById } from './content-data.js'; 
+
+        let currentUserUid = null;
+        let userFavorites = []; // Variável para armazenar os favoritos do usuário
+
+        // Função para exibir os itens favoritos
+        async function displayFavorites() {
+            const favoritesListContainer = document.getElementById('favorites-list');
+            const noFavoritesMessage = document.querySelector('.no-favorites-message');
+            const loadingMessage = document.getElementById('loading-favorites');
+
+            favoritesListContainer.innerHTML = ''; // Limpa o conteúdo anterior
+            loadingMessage.style.display = 'block'; // Mostra mensagem de carregamento
+            noFavoritesMessage.style.display = 'none'; // Esconde mensagem de "nenhum favorito"
+
+            if (!userFavorites || userFavorites.length === 0) {
+                loadingMessage.style.display = 'none';
+                noFavoritesMessage.style.display = 'block';
+                return;
+            }
+
+            // Agrupa os favoritos por tipo para melhor organização (opcional)
+            const favoritedWorkouts = [];
+            const favoritedArticles = [];
+
+            userFavorites.forEach(itemId => {
+                const item = findItemById(itemId);
+                if (item) {
+                    if (item.type === 'treino') {
+                        favoritedWorkouts.push(item);
+                    } else if (item.type === 'artigo') {
+                        favoritedArticles.push(item);
+                    }
+                }
+            });
+
+            loadingMessage.style.display = 'none'; // Esconde carregamento após processar
+
+            if (favoritedWorkouts.length > 0) {
+                const workoutSection = document.createElement('section');
+                workoutSection.classList.add('day-section'); // Reutiliza estilo de seção
+                workoutSection.innerHTML = `<h2>🏋️ Meus Treinos Favoritos</h2>`;
+                favoritedWorkouts.forEach(exercise => {
+                    workoutSection.innerHTML += `
+                        <div class="exercise-card">
+                            <div class="exercise-video">
+                                <iframe width="1310" height="737" src="${exercise.videoUrl}" title="${exercise.title}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                            </div>
+                            <div class="exercise-details">
+                                <h3>${exercise.title}</h3>
+                                <div class="exercise-meta">
+                                    <span class="badge">⏱ ${exercise.duration}</span>
+                                    <span class="badge">💪 ${exercise.intensity}</span>
+                                </div>
+                                <p>${exercise.description}</p>
+                                <div class="actions">
+                                    <button class="favorite-button favorited" data-item-id="${exercise.id}" data-item-type="treino">
+                                        <span class="icon">★</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                favoritesListContainer.appendChild(workoutSection);
+            }
+
+            if (favoritedArticles.length > 0) {
+                const articleSection = document.createElement('section');
+                articleSection.classList.add('day-section'); // Reutiliza estilo de seção
+                articleSection.innerHTML = `<h2>📝 Meus Artigos Favoritos</h2>`;
+                favoritedArticles.forEach(article => {
+                    articleSection.innerHTML += `
+                        <div class="exercise-card"> <!-- Reutiliza o estilo de card para artigos -->
+                            <div class="exercise-details">
+                                <h3>${article.title}</h3>
+                                <div class="exercise-meta">
+                                    <span class="badge">Categoria: ${article.category}</span>
+                                </div>
+                                <p>${article.description}</p>
+                                <div class="actions">
+                                    <!-- CORREÇÃO AQUI: Aponta para artigo-detalhe.html com o ID do artigo -->
+                                    <a href="artigo-detalhe.html?id=${article.id}" class="cta-button">Ler Artigo</a>
+                                    <button class="favorite-button favorited" data-item-id="${article.id}" data-item-type="artigo">
+                                        <span class="icon">★</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                favoritesListContainer.appendChild(articleSection);
+            }
+
+            // Se não houver nenhum favorito após carregar e processar
+            if (favoritedWorkouts.length === 0 && favoritedArticles.length === 0) {
+                noFavoritesMessage.style.display = 'block';
+            }
+
+            // Adiciona event listeners para os botões de favoritar
+            document.querySelectorAll('.favorite-button').forEach(button => {
+                button.addEventListener('click', handleFavoriteClick);
+            });
+        }
+
+        // Função para lidar com o clique no botão de favoritar (reutilizada)
+        async function handleFavoriteClick(event) {
+            const button = event.currentTarget;
+            const itemId = button.dataset.itemId;
+            const itemType = button.dataset.itemType;
+
+            if (!currentUserUid) {
+                alert('Erro: Utilizador não logado.');
+                return;
+            }
+
+            const userRef = doc(db, "user_questionnaires", currentUserUid);
+            const isFavorited = userFavorites.includes(itemId);
+
+            try {
+                if (isFavorited) {
+                    await updateDoc(userRef, {
+                        favoritedItems: arrayRemove(itemId)
+                    });
+                    userFavorites = userFavorites.filter(id => id !== itemId);
+                    button.classList.remove('favorited');
+                    button.querySelector('.icon').textContent = '☆';
+                    alert(`Item removido dos seus favoritos.`);
+                } else {
+                    await updateDoc(userRef, {
+                        favoritedItems: arrayUnion(itemId)
+                    });
+                    userFavorites.push(itemId);
+                    button.classList.add('favorited');
+                    button.querySelector('.icon').textContent = '★';
+                    alert(`Item adicionado aos seus favoritos!`);
+                }
+                displayFavorites(); // Re-renderiza a lista de favoritos após a mudança
+            } catch (error) {
+                console.error("Erro ao atualizar favoritos:", error);
+                alert('Ocorreu um erro ao atualizar seus favoritos. Tente novamente.');
+            }
+        }
+
+        // Lógica do Modo Escuro (inalterada)
+        function applyDarkModePreference() {
+            const isDarkMode = localStorage.getItem('dark-mode') === 'enabled';
+            if (isDarkMode) {
+                document.body.classList.add('dark-mode');
+                document.getElementById('dark-mode-toggle').innerHTML = '<span class="icon">🌙</span> Modo Escuro';
+            } else {
+                document.body.classList.remove('dark-mode');
+                document.getElementById('dark-mode-toggle').innerHTML = '<span class="icon">☀️</span> Modo Claro';
+            }
+        }
+
+        function toggleDarkMode() {
+            if (document.body.classList.contains('dark-mode')) {
+                localStorage.setItem('dark-mode', 'disabled');
+            } else {
+                localStorage.setItem('dark-mode', 'enabled');
+            }
+            applyDarkModePreference();
+        }
+
+        // Verifica o estado de autenticação
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUserUid = user.uid;
+
+                const userNameElement = document.getElementById('user-nome');
+                if (userNameElement) {
+                    userNameElement.textContent = user.displayName || user.email.split('@')[0];
+                }
+
+                const userAvatarCharElement = document.getElementById('user-avatar-char');
+                if (userAvatarCharElement) {
+                    userAvatarCharElement.textContent = user.displayName ? user.displayName.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase();
+                }
+
+                const userQuestionnaireRef = doc(db, "user_questionnaires", user.uid);
+                const userQuestionnaireSnap = await getDoc(userQuestionnaireRef);
+
+                if (!userQuestionnaireSnap.exists() || userQuestionnaireSnap.data().hasPaid !== true) {
+                    window.location.href = 'pagamento.html';
+                } else {
+                    userFavorites = userQuestionnaireSnap.data().favoritedItems || [];
+                    displayFavorites();
+                }
+            } else {
+                window.location.href = 'login.html';
+            }
+        });
+
+        // Lógica de Logout
+        document.addEventListener('DOMContentLoaded', () => {
+            applyDarkModePreference(); 
+
+            const darkModeToggleButton = document.getElementById('dark-mode-toggle');
+            if (darkModeToggleButton) {
+                darkModeToggleButton.addEventListener('click', toggleDarkMode);
+            }
+
+            const logoutButton = document.getElementById('logout-button');
+            if (logoutButton) {
+                logoutButton.addEventListener('click', async () => {
+                    try {
+                        await signOut(auth);
+                    } catch (error) {
+                        alert(`Erro ao fazer logout: ${error.message}`);
+                        console.error('Erro de logout:', error);
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -52,15 +52,15 @@
         }
 
         .article-card .read-more {
-            background-color: #6a11cb;
-            background-image: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
+            background-color: #087234; /* Cor atualizada para o gradiente */
+            background-image: linear-gradient(135deg, #087234, #02fdd3); /* Cor atualizada para o gradiente */
             color: white;
             padding: 10px 20px;
             border-radius: 8px;
             text-decoration: none;
             font-weight: 600;
             transition: opacity 0.3s ease;
-            align-self: flex-end; /* Alinha o botão à direita */
+            /* align-self: flex-end; REMOVIDO, agora controlado pelo .actions */
         }
 
         .article-card .read-more:hover {
@@ -95,8 +95,8 @@
             justify-content: space-between;
             align-items: center;
             padding: 1rem 2rem;
-            background-color: #6a11cb;
-            
+            background-color: #087234; /* Cor atualizada para o gradiente */
+            background-image: linear-gradient(135deg, #087234, #02fdd3); /* Cor atualizada para o gradiente */
             color: white;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
@@ -123,7 +123,7 @@
             width: 40px;
             height: 40px;
             background-color: #f0f0f0;
-            color: #2575fc;
+            color: #087234; /* Cor atualizada para o gradiente */
             border-radius: 50%;
             display: flex;
             justify-content: center;
@@ -147,6 +147,92 @@
         .user-header .small-button:hover {
             background-color: #d32f2f;
         }
+
+        /* Estilos para o modo escuro */
+        body.dark-mode .articles-section h1 {
+            color: #e0e0e0;
+        }
+        body.dark-mode .article-card {
+            background-color: #2e2e4a;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        body.dark-mode .article-card h2 {
+            color: #e0e0e0;
+        }
+        body.dark-mode .article-card p {
+            color: #c0c0c0;
+        }
+        body.dark-mode .article-card .read-more {
+            background-image: none;
+            background-color: #4a4a6e; /* Cor para o modo escuro */
+        }
+        body.dark-mode .article-card .read-more:hover {
+            background-color: #5a5a7e;
+        }
+
+        /* Estilos para o botão de toggle do modo escuro */
+        .dark-mode-toggle {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .dark-mode-toggle:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Ícone de sol/lua (usando emojis ou Font Awesome, por exemplo) */
+        .dark-mode-toggle .icon {
+            font-size: 1.2em;
+        }
+
+        /* Ajustes para o layout dos botões dentro do card (reutilizado de arealogad) */
+        .article-card .actions {
+            display: flex;
+            gap: 10px; /* Espaço entre os botões */
+            margin-top: 1rem;
+            align-items: center;
+            width: 100%; /* Para alinhar o read-more à direita */
+            justify-content: space-between; /* Alinha botões nas extremidades */
+        }
+
+        .favorite-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.8rem; /* Tamanho do ícone */
+            color: #ccc; /* Cor padrão da estrela (não favorita) */
+            transition: color 0.2s ease;
+            padding: 0; /* Remove padding padrão do botão */
+            line-height: 1; /* Alinha o ícone */
+        }
+
+        .favorite-button.favorited .icon {
+            color: #FFD700; /* Cor da estrela favorita (dourado) */
+        }
+
+        .favorite-button:hover .icon {
+            color: #FFD700; /* Cor ao passar o mouse */
+        }
+
+        /* Estilos para o modo escuro */
+        body.dark-mode .favorite-button {
+            color: #777; /* Cor da estrela não favorita no modo escuro */
+        }
+        body.dark-mode .favorite-button.favorited .icon {
+            color: #FFD700; /* Mantém o dourado para favorito no modo escuro */
+        }
+        body.dark-mode .favorite-button:hover .icon {
+            color: #FFD700;
+        }
     </style>
 </head>
 <body>
@@ -156,9 +242,13 @@
             <ul>
                 <li><a href="arealogad.html">Meu Plano</a></li>
                 <li><a href="artigos.html">Artigos e Dicas</a></li>
+                <li><a href="meus-favoritos.html">Meus Favoritos</a></li> <!-- NOVO LINK -->
             </ul>
         </nav>
         <div class="user-info">
+            <button id="dark-mode-toggle" class="dark-mode-toggle">
+                <span class="icon">☀️</span> Modo Claro
+            </button>
             <span>Olá, <strong id="user-nome"></strong></span>
             <a href="perfil.html" class="user-avatar-link">
                 <div class="user-avatar" id="user-avatar-char">U</div>
@@ -187,109 +277,147 @@
         import { auth, db } from './firebase-init.js';
         // Importa módulos Firebase específicos necessários para esta página
         import { onAuthStateChanged, signOut, updateProfile } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js';
-        import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js';
+        import { doc, getDoc, updateDoc, arrayUnion, arrayRemove } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js';
 
-        // Estrutura de dados para os artigos
-        const articles = [
-            {
-                id: 'nutricao-basica',
-                title: 'Dicas de Nutrição Básica para Todos',
-                summary: 'Descubra como uma alimentação equilibrada pode transformar sua energia e bem-estar, com dicas simples para o dia a dia.',
-                content: `
-                    <p>Uma alimentação saudável é a base para qualquer programa de fitness, especialmente para quem busca adaptação ou reabilitação. Não se trata de dietas restritivas, mas sim de escolhas inteligentes e consistentes.</p>
-                    <h3>Priorize Alimentos Naturais</h3>
-                    <p>Opte por alimentos integrais, frutas, vegetais, proteínas magras e grãos. Eles fornecem os nutrientes essenciais que seu corpo precisa para funcionar bem e se recuperar dos exercícios.</p>
-                    <h3>Hidrate-se Constantemente</h3>
-                    <p>A água é vital para todas as funções corporais. Mantenha uma garrafa de água por perto e beba ao longo do dia, especialmente antes, durante e depois dos treinos.</p>
-                    <h3>Planeje Suas Refeições</h3>
-                    <p>Ter um plano ajuda a evitar escolhas impulsivas e menos saudáveis. Prepare suas refeições com antecedência ou tenha opções nutritivas prontas para consumo.</p>
-                    <h3>Ouça Seu Corpo</h3>
-                    <p>Preste atenção aos sinais de fome e saciedade. Coma devagar e saboreie seus alimentos. Evite comer por tédio ou estresse.</p>
-                    <p>Lembre-se: pequenas mudanças fazem uma grande diferença a longo prazo. Consulte sempre um profissional de saúde ou nutricionista para um plano alimentar personalizado.</p>
-                `
-            },
-            {
-                id: 'saude-mental',
-                title: 'Cuidados com a Saúde Mental no Dia a Dia',
-                summary: 'Entenda a importância da saúde mental e como pequenas ações podem fazer uma grande diferença no seu bem-estar emocional.',
-                content: `
-                    <p>A saúde mental é tão importante quanto a saúde física. Em um mundo agitado, cuidar da mente é fundamental para uma vida equilibrada e plena. Aqui estão algumas dicas práticas:</p>
-                    <h3>Pratique a Atenção Plena (Mindfulness)</h3>
-                    <p>Dedique alguns minutos do dia para focar no presente. Observe sua respiração, seus pensamentos e sensações sem julgamento. Isso pode reduzir o estresse e aumentar a clareza mental.</p>
-                    <h3>Mantenha Conexões Sociais</h3>
-                    <p>Interaja com amigos e familiares. O apoio social é um pilar da saúde mental. Mesmo que seja uma chamada de vídeo ou uma breve conversa, manter-se conectado faz a diferença.</p>
-                    <h3>Durma Bem</h3>
-                    <p>Priorize um sono de qualidade. A privação do sono afeta diretamente o humor, a concentração e a capacidade de lidar com o estresse. Crie uma rotina relaxante antes de dormir.</p>
-                    <h3>Gerencie o Estresse</h3>
-                    <p>Identifique o que causa estresse em sua vida e encontre formas saudáveis de lidar com isso. Pode ser através de exercícios físicos, meditação, hobbies ou conversas com alguém de confiança.</p>
-                    <h3>Busque Ajuda Profissional</h3>
-                    <p>Não hesite em procurar um psicólogo ou terapeuta se estiver a sentir dificuldades persistentes. Cuidar da saúde mental é um ato de coragem e autocuidado.</p>
-                `
-            },
-            {
-                id: 'manter-motivacao',
-                title: 'Como Manter a Motivação nos Treinos e na Vida',
-                summary: 'Descubra estratégias eficazes para manter a chama da motivação acesa, superando desafios e alcançando seus objetivos de forma consistente.',
-                content: `
-                    <p>Manter a motivação, seja nos treinos ou em qualquer área da vida, é um desafio comum. A boa notícia é que a motivação não é algo fixo; ela pode ser cultivada e renovada. Veja como:</p>
-                    <h3>Defina Metas Claras e Realistas</h3>
-                    <p>Tenha objetivos específicos e alcançáveis. Em vez de "quero ser mais ativo", defina "quero caminhar 30 minutos, 3 vezes por semana". Metas claras são mais fáceis de monitorar e celebrar.</p>
-                    <h3>Celebre Pequenas Vitórias</h3>
-                    <p>Reconheça e celebre cada passo do seu progresso, por menor que seja. Isso reforça o comportamento positivo e recarrega sua motivação para continuar.</p>
-                    <h3>Encontre Seu "Porquê"</h3>
-                    <p>Conecte-se com a razão mais profunda pela qual você começou. É pela saúde? Pela família? Pela independência? Lembre-se constantemente do seu propósito.</p>
-                    <h3>Varie Seus Treinos</h3>
-                    <p>A rotina pode levar ao tédio. Experimente novos exercícios, diferentes ambientes ou até mesmo um novo horário. A novidade pode reacender o interesse.</p>
-                    <h3>Busque Apoio</h3>
-                    <p>Compartilhe seus objetivos com amigos, familiares ou a comunidade FitAdapt. Ter alguém para te apoiar ou treinar junto pode ser um grande impulsionador.</p>
-                    <h3>Seja Gentil Consigo Mesmo</h3>
-                    <p>Haverá dias em que a motivação estará baixa. Não se culpe. Permita-se um descanso, mas volte à rotina no dia seguinte. A consistência é mais importante que a perfeição.</p>
-                `
-            }
-        ];
+        // NOVO: Importa os artigos de content-data.js
+        import { articles } from './content-data.js';
+
+        let currentUserUid = null;
+        let userFavorites = []; // Variável para armazenar os favoritos do usuário
 
         // Função para exibir os artigos
-        function displayArticles() {
+        async function displayArticles() {
             const articlesContainer = document.getElementById('articles-container');
             articlesContainer.innerHTML = ''; // Limpa o conteúdo anterior
+
+            // Verifica se há artigos para exibir
+            if (!articles || articles.length === 0) {
+                articlesContainer.innerHTML = `<p style="text-align: center;">Nenhum artigo disponível no momento.</p>`;
+                return;
+            }
 
             articles.forEach(article => {
                 const articleCard = document.createElement('div');
                 articleCard.classList.add('article-card');
+                const isFavorited = userFavorites.includes(article.id); // Verifica se já é favorito
+                
                 articleCard.innerHTML = `
                     <h2>${article.title}</h2>
                     <p>${article.summary}</p>
-                    <a href="artigo-detalhe.html?id=${article.id}" class="read-more">Ler Mais</a>
+                    <div class="actions"> <!-- NOVO: Container para os botões -->
+                        <a href="artigo-detalhe.html?id=${article.id}" class="read-more">Ler Mais</a>
+                        <button class="favorite-button ${isFavorited ? 'favorited' : ''}" data-item-id="${article.id}" data-item-type="artigo">
+                            <span class="icon">${isFavorited ? '★' : '☆'}</span>
+                        </button>
+                    </div>
                 `;
                 articlesContainer.appendChild(articleCard);
             });
+
+            // NOVO: Adiciona event listeners para os botões de favoritar
+            document.querySelectorAll('.favorite-button').forEach(button => {
+                button.addEventListener('click', handleFavoriteClick);
+            });
         }
 
-        // Lógica de autenticação e redirecionamento
+        // NOVO: Função para lidar com o clique no botão de favoritar (reutilizada)
+        async function handleFavoriteClick(event) {
+            const button = event.currentTarget;
+            const itemId = button.dataset.itemId;
+            const itemType = button.dataset.itemType; // 'treino' ou 'artigo'
+
+            if (!currentUserUid) {
+                alert('Erro: Utilizador não logado.');
+                return;
+            }
+
+            const userRef = doc(db, "user_questionnaires", currentUserUid);
+            const isFavorited = userFavorites.includes(itemId);
+
+            try {
+                if (isFavorited) {
+                    // Se já é favorito, remove o item
+                    await updateDoc(userRef, {
+                        favoritedItems: arrayRemove(itemId)
+                    });
+                    userFavorites = userFavorites.filter(id => id !== itemId);
+                    button.classList.remove('favorited');
+                    button.querySelector('.icon').textContent = '☆';
+                    alert(`Item removido dos seus favoritos.`);
+                } else {
+                    // Se não é favorito, adiciona o item
+                    await updateDoc(userRef, {
+                        favoritedItems: arrayUnion(itemId)
+                    });
+                    userFavorites.push(itemId);
+                    button.classList.add('favorited');
+                    button.querySelector('.icon').textContent = '★';
+                    alert(`Item adicionado aos seus favoritos!`);
+                }
+            } catch (error) {
+                console.error("Erro ao atualizar favoritos:", error);
+                alert('Ocorreu um erro ao atualizar seus favoritos. Tente novamente.');
+            }
+        }
+
+        // Lógica do Modo Escuro
+        function applyDarkModePreference() {
+            const isDarkMode = localStorage.getItem('dark-mode') === 'enabled';
+            if (isDarkMode) {
+                document.body.classList.add('dark-mode');
+                // Verifica se o elemento existe antes de tentar acessá-lo
+                const darkModeToggleBtn = document.getElementById('dark-mode-toggle');
+                if (darkModeToggleBtn) {
+                    darkModeToggleBtn.innerHTML = '<span class="icon">🌙</span> Modo Escuro';
+                }
+            } else {
+                document.body.classList.remove('dark-mode');
+                const darkModeToggleBtn = document.getElementById('dark-mode-toggle');
+                if (darkModeToggleBtn) {
+                    darkModeToggleBtn.innerHTML = '<span class="icon">☀️</span> Modo Claro';
+                }
+            }
+        }
+
+        function toggleDarkMode() {
+            if (document.body.classList.contains('dark-mode')) {
+                localStorage.setItem('dark-mode', 'disabled');
+            } else {
+                localStorage.setItem('dark-mode', 'enabled');
+            }
+            applyDarkModePreference(); // Aplica a nova preferência imediatamente
+        }
+
+        // Verifica o estado de autenticação
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                // Atualiza as informações do usuário no cabeçalho
+                currentUserUid = user.uid;
+
+                let userName = user.displayName;
+                
+                // Exibe o nome do utilizador e a primeira letra no avatar
                 const userNameElement = document.getElementById('user-nome');
                 if (userNameElement) {
-                    userNameElement.textContent = user.displayName || user.email.split('@')[0];
+                    userNameElement.textContent = userName || user.email.split('@')[0];
                 }
+
                 const userAvatarCharElement = document.getElementById('user-avatar-char');
                 if (userAvatarCharElement) {
-                    userAvatarCharElement.textContent = user.displayName ? user.displayName.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase();
+                    userAvatarCharElement.textContent = userName ? userName.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase();
                 }
 
                 const userQuestionnaireRef = doc(db, "user_questionnaires", user.uid);
                 const userQuestionnaireSnap = await getDoc(userQuestionnaireRef);
 
-                // NOVO: Verifica se o usuário tem um plano pago E se o questionário existe
+                // NOVO: Carrega os favoritos do usuário aqui também
+                userFavorites = userQuestionnaireSnap.data()?.favoritedItems || [];
+
                 if (!userQuestionnaireSnap.exists() || userQuestionnaireSnap.data().hasPaid !== true) {
                     window.location.href = 'pagamento.html';
                 } else if (userQuestionnaireSnap.exists() && !userQuestionnaireSnap.data().objetivo) {
-                    // Se pagou, mas não preencheu o questionário, redireciona para o questionário
                     window.location.href = 'questionario.html';
                 } else {
-                    // Se está logado, pagou e preencheu o questionário, exibe os artigos
-                    displayArticles();
+                    displayArticles(); // Chama a função para exibir os artigos
                 }
             } else {
                 window.location.href = 'login.html'; // Redireciona para login se não estiver autenticado
@@ -298,6 +426,15 @@
 
         // Lógica de Logout
         document.addEventListener('DOMContentLoaded', () => {
+            // Aplica a preferência de modo escuro ao carregar a página
+            applyDarkModePreference(); 
+
+            // Adiciona listener ao botão de toggle do modo escuro
+            const darkModeToggleButton = document.getElementById('dark-mode-toggle');
+            if (darkModeToggleButton) {
+                darkModeToggleButton.addEventListener('click', toggleDarkMode);
+            }
+
             const logoutButton = document.getElementById('logout-button');
             if (logoutButton) {
                 logoutButton.addEventListener('click', async () => {

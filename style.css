@@ -19,13 +19,13 @@ h3,
 .logo {
     font-family: 'Poppins', sans-serif;
     text-decoration: none;
-    color: #ffffff; /* Ajustado para ser visível no fundo claro padrão */
+    color: #000000; /* Ajustado para ser visível no fundo claro padrão */
 }
 
 /* Cabeçalho (Estilos gerais, serão sobrescritos por .user-header em arealogad) */
 header {
     background: linear-gradient(135deg, #087234, #02fdd3);
-    color: white;
+    color: rgb(2, 2, 2);
     padding: 1rem 0;
     text-align: center;
 }
@@ -41,9 +41,9 @@ header {
     opacity: 0.9;
 }
 
-/* Navegação (Estilos gerais, serão sobrescritos por .user-header nav em arealogad) */
+
 nav {
-    background: linear-gradient(135deg, #087234, #02fdd3);
+    
     padding: 1rem;
 }
 
@@ -749,4 +749,56 @@ body.dark-mode .articles-promo-card p {
 /* You might want to add hover effects too */
 .user-avatar-link:hover .user-avatar {
     opacity: 0.8; /* Example hover effect */
+}
+
+
+/*meus favs */
+
+/* Ajustes para o layout dos botões dentro do card */
+.exercise-details .actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 1rem;
+    align-items: center; 
+}
+
+.favorite-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.8rem; 
+    color: #ccc; 
+    transition: color 0.2s ease;
+    padding: 0; 
+    line-height: 1; 
+}
+
+.favorite-button.favorited .icon {
+    color: #FFD700; 
+}
+
+.favorite-button:hover .icon {
+    color: #FFD700; 
+}
+
+/* Estilos para o modo escuro */
+body.dark-mode .favorite-button {
+    color: #777; 
+}
+body.dark-mode .favorite-button.favorited .icon {
+    color: #FFD700; 
+}
+body.dark-mode .favorite-button:hover .icon {
+    color: #FFD700;
+}
+
+/* Mensagem de "nenhum favorito" */
+.no-favorites-message {
+    text-align: center;
+    margin-top: 3rem;
+    font-size: 1.2rem;
+    color: #666;
+}
+body.dark-mode .no-favorites-message {
+    color: #aaa;
 }

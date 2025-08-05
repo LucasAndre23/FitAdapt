@@ -17,6 +17,7 @@
             <ul>
                 <li><a href="arealogad.html">Meu Plano</a></li>
                 <li><a href="artigos.html">Artigos e Dicas</a></li>
+                <li><a href="meus-favoritos.html">Meus Favoritos</a></li>
             </ul>
         </nav>
         <div class="user-info">
@@ -62,137 +63,12 @@
         import { onAuthStateChanged, signOut, updateProfile } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js';
         import { doc, getDoc, updateDoc, arrayUnion, arrayRemove } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js';
 
-        // --- Estrutura de Dados para Planos de Treino ---
-        const workoutPlans = {
-            'Melhorar mobilidade': [
-                {
-                    dayTitle: 'Dia 1 - Foco em Mobilidade Articular',
-                    exercises: [
-                        {
-                            title: 'Alongamento para Coluna',
-                            videoUrl: 'https://www.youtube.com/embed/QEzj6OMR3t8',
-                            duration: '10 min',
-                            intensity: 'Leve',
-                            description: 'Exercício adaptado para aliviar tensão na lombar. Execute com cuidado, mantendo a respiração constante.'
-                        },
-                        {
-                            title: 'Mobilidade de Quadril',
-                            videoUrl: 'https://www.youtube.com/embed/CgloG8T1VmU',
-                            duration: '17 min',
-                            intensity: 'Leve',
-                            description: 'Exercícios suaves para melhorar a amplitude de movimento do quadril.'
-                        }
-                    ]
-                },
-                {
-                    dayTitle: 'Dia 2 - Mobilidade de Ombro e Tronco',
-                    exercises: [
-                        {
-                            title: 'Rotações de Ombro e Pescoço',
-                            videoUrl: 'https://www.youtube.com/embed/QCAev2GSz2c',
-                            duration: '7 min',
-                            intensity: 'Leve',
-                            description: 'Movimentos circulares e suaves para aumentar a flexibilidade dos ombros e aliviar a tensão no pescoço.'
-                        },
-                         {
-                            title: 'Flexão Lateral de Tronco',
-                            videoUrl: 'https://www.youtube.com/embed/KZw-LERb59A',
-                            duration: '5 min',
-                            intensity: 'Leve',
-                            description: 'Alongamento lateral para melhorar a flexibilidade da coluna e do tronco.'
-                        }
-                    ]
-                }
-            ],
-            'Alívio de dores': [
-                {
-                    dayTitle: 'Dia 1 - Alívio de Dores na Lombar',
-                    exercises: [
-                        {
-                            title: 'Alongamento Gato-Camelo',
-                            videoUrl: 'https://www.youtube.com/embed/IwVYLXuMdfc',
-                            duration: '10 min',
-                            intensity: 'Suave',
-                            description: 'Movimento para mobilizar a coluna e aliviar a compressão na região lombar.'
-                        },
-                        {
-                            title: 'Alongamento em pé',
-                            videoUrl: 'https://www.youtube.com/embed/Ty5kwQgXUrI',
-                            duration: '12 min',
-                            intensity: 'Moderado',
-                            description: 'Fortalecimento de glúteos para dar suporte à região lombar e reduzir dores.'
-                        }
-                    ]
-                }
-            ],
-            'Condicionamento físico': [
-                {
-                    dayTitle: 'Dia 1 - Treino Cardiovascular Leve',
-                    exercises: [
-                        {
-                            title: 'AEROHIIT',
-                            videoUrl: 'https://www.youtube.com/embed/eO3-QPbXwD8',
-                            duration: '20 min',
-                            intensity: 'Leve',
-                            description: ' Exercícios para Emagrecer Rápido'
-                        },
-                        {
-                            title: 'Polichinelos Modificados',
-                            videoUrl: 'https://www.youtube.com/embed/n5Vi9G2k5v8',
-                            duration: '10 min',
-                            intensity: 'Moderado',
-                            description: 'Versão de baixo impacto do polichinelo, ideal para aquecimento e condicionamento.'
-                        }
-                    ]
-                }
-            ],
-            'Reabilitação pós-lesão': [
-                {
-                    dayTitle: 'Dia 1 - Reabilitação de Joelho (Fase Inicial)',
-                    exercises: [
-                        {
-                            title: 'Isometria de Quadríceps',
-                            videoUrl: 'https://www.youtube.com/embed/MLqXEXpMfS8',
-                            duration: '8 min',
-                            intensity: 'Baixíssima',
-                            description: 'Exercícios isométricos para fortalecer o quadríceps sem movimento articular, essencial na recuperação de lesões no joelho.'
-                        },
-                        {
-                            title: 'Elevação de Calcanhares Sentado',
-                            videoUrl: 'https://www.youtube.com/embed/tPRDA3dDqOY',
-                            duration: '7 min',
-                            intensity: 'Leve',
-                            description: 'Movimento suave para ativar os músculos da panturrilha e melhorar a circulação.'
-                        }
-                    ]
-                }
-            ],
-            // Plano padrão para quando não há correspondência exata ou para o início
-            'default': [
-                {
-                    dayTitle: 'Plano Básico de Mobilidade',
-                    exercises: [
-                        {
-                            title: 'Alongamento para Coluna e Pernas',
-                            videoUrl: 'https://www.youtube.com/embed/5O3EQHQA6Ag',
-                            duration: '10 min',
-                            intensity: 'Leve',
-                            description: 'Série fundamental para iniciar a melhora da mobilidade e reduzir a rigidez corporal.'
-                        },
-                        {
-                            title: 'Rotina Matinal para coluna',
-                            videoUrl: 'https://www.youtube.com/embed/CgloG8T1VmU',
-                            duration: '20 min',
-                            intensity: 'Leve',
-                            description: ''
-                        }
-                    ]
-                }
-            ]
-        };
+        // Importa os planos de treino de content-data.js
+        import { workoutPlans } from './content-data.js'; // AGORA IMPORTADO CORRETAMENTE
 
-        let currentUserUid = null; // Variável para armazenar o UID do utilizador atual
-        let userQuestionnaireData = null; // Variável para armazenar os dados do questionário do utilizador
+        let currentUserUid = null;
+        let userQuestionnaireData = null;
+        let userFavorites = [];
 
         // Função para calcular e exibir o progresso
         function updateProgressDisplay() {
@@ -200,7 +76,6 @@
             const progressText = document.getElementById('progress-text');
 
             if (!userQuestionnaireData || !userQuestionnaireData.objetivo) {
-                // Caso não haja dados do questionário, exibe 0%
                 progressBarFill.style.width = '0%';
                 progressText.textContent = '0% Completo';
                 return;
@@ -225,11 +100,17 @@
 
         // Função para exibir o plano de treino com base nos dados do questionário
         async function displayWorkoutPlan(questionnaireData) {
-            userQuestionnaireData = questionnaireData; // Armazena os dados do questionário globalmente
+            userQuestionnaireData = questionnaireData;
             const workoutContainer = document.getElementById('dynamic-workout-plan');
-            workoutContainer.innerHTML = ''; // Limpa o conteúdo anterior
+            workoutContainer.innerHTML = '';
+
+            // Adicionado log para verificar o objetivo do usuário
+            console.log("Objetivo do usuário:", userQuestionnaireData.objetivo);
 
             let planToDisplay = workoutPlans[userQuestionnaireData.objetivo] || workoutPlans['default'];
+
+            // Adicionado log para verificar o plano selecionado
+            console.log("Plano de treino selecionado:", planToDisplay);
 
             if (!planToDisplay || planToDisplay.length === 0) {
                 workoutContainer.innerHTML = `
@@ -251,10 +132,10 @@
                 dayPlan.exercises.forEach(exercise => {
                     const exerciseCard = document.createElement('div');
                     exerciseCard.classList.add('exercise-card');
-                    // Cria um ID único para cada exercício baseado no título do vídeo
-                    const exerciseId = exercise.videoUrl; // Usar a URL do vídeo como ID único por simplicidade
+                    const exerciseId = exercise.id; 
 
                     const isCompleted = completedExercisesSet.has(exerciseId);
+                    const isFavorited = userFavorites.includes(exerciseId);
                     
                     exerciseCard.innerHTML = `
                         <div class="exercise-video">
@@ -267,9 +148,14 @@
                                 <span class="badge">💪 ${exercise.intensity}</span>
                             </div>
                             <p>${exercise.description}</p>
-                            <button class="cta-button mark-as-done-button ${isCompleted ? 'completed' : ''}" data-exercise-id="${exerciseId}">
-                                ${isCompleted ? 'Concluído!' : 'Marcar como concluído'}
-                            </button>
+                            <div class="actions">
+                                <button class="cta-button mark-as-done-button ${isCompleted ? 'completed' : ''}" data-exercise-id="${exerciseId}">
+                                    ${isCompleted ? 'Concluído!' : 'Marcar como concluído'}
+                                </button>
+                                <button class="favorite-button ${isFavorited ? 'favorited' : ''}" data-item-id="${exerciseId}" data-item-type="treino">
+                                    <span class="icon">${isFavorited ? '★' : '☆'}</span>
+                                </button>
+                            </div>
                         </div>
                     `;
                     daySection.appendChild(exerciseCard);
@@ -277,12 +163,15 @@
                 workoutContainer.appendChild(daySection);
             });
 
-            // Adiciona event listeners aos botões DEPOIS que eles são adicionados ao DOM
             document.querySelectorAll('.mark-as-done-button').forEach(button => {
                 button.addEventListener('click', handleMarkAsDone);
             });
 
-            updateProgressDisplay(); // Atualiza o progresso após renderizar os vídeos
+            document.querySelectorAll('.favorite-button').forEach(button => {
+                button.addEventListener('click', handleFavoriteClick);
+            });
+
+            updateProgressDisplay();
         }
 
         // Função que lida com o clique no botão "Marcar como concluído"
@@ -298,7 +187,6 @@
 
             const userQuestionnaireRef = doc(db, "user_questionnaires", currentUserUid);
             try {
-                // Obtém os dados mais recentes do questionário do Firestore
                 const docSnap = await getDoc(userQuestionnaireRef);
                 if (docSnap.exists()) {
                     let currentCompleted = docSnap.data().completedExercises || [];
@@ -306,11 +194,9 @@
                     const isCompleted = currentCompleted.includes(exerciseId);
 
                     if (isCompleted) {
-                        // Se já está concluído, REMOVE do array (desmarca)
                         await updateDoc(userQuestionnaireRef, {
                             completedExercises: arrayRemove(exerciseId)
                         });
-                        // Atualiza a variável global
                         const index = currentCompleted.indexOf(exerciseId);
                         if (index > -1) {
                             currentCompleted.splice(index, 1);
@@ -319,21 +205,17 @@
                         button.textContent = 'Marcar como concluído';
                         button.classList.remove('completed');
                     } else {
-                        // Se NÃO está concluído, ADICIONA ao array (marca)
                         await updateDoc(userQuestionnaireRef, {
                             completedExercises: arrayUnion(exerciseId)
                         });
-                        // Atualiza a variável global
                         currentCompleted.push(exerciseId);
 
                         button.textContent = 'Concluído!';
                         button.classList.add('completed');
                     }
                     
-                    // Atualiza a variável global com os novos dados
                     userQuestionnaireData.completedExercises = currentCompleted;
-                    
-                    updateProgressDisplay(); // Recalcula e exibe o progresso
+                    updateProgressDisplay();
                 }
             } catch (error) {
                 alert(`Erro ao atualizar o status: ${error.message}`);
@@ -341,6 +223,44 @@
             }
         }
         
+        // Função para lidar com o clique no botão de favoritar
+        async function handleFavoriteClick(event) {
+            const button = event.currentTarget;
+            const itemId = button.dataset.itemId;
+            const itemType = button.dataset.itemType;
+
+            if (!currentUserUid) {
+                alert('Erro: Utilizador não logado.');
+                return;
+            }
+
+            const userRef = doc(db, "user_questionnaires", currentUserUid);
+            const isFavorited = userFavorites.includes(itemId);
+
+            try {
+                if (isFavorited) {
+                    await updateDoc(userRef, {
+                        favoritedItems: arrayRemove(itemId)
+                    });
+                    userFavorites = userFavorites.filter(id => id !== itemId);
+                    button.classList.remove('favorited');
+                    button.querySelector('.icon').textContent = '☆';
+                    alert(`Item removido dos seus favoritos.`);
+                } else {
+                    await updateDoc(userRef, {
+                        favoritedItems: arrayUnion(itemId)
+                    });
+                    userFavorites.push(itemId);
+                    button.classList.add('favorited');
+                    button.querySelector('.icon').textContent = '★';
+                    alert(`Item adicionado aos seus favoritos!`);
+                }
+            } catch (error) {
+                console.error("Erro ao atualizar favoritos:", error);
+                alert('Ocorreu um erro ao atualizar seus favoritos. Tente novamente.');
+            }
+        }
+
         // Lógica do Modo Escuro
         function applyDarkModePreference() {
             const isDarkMode = localStorage.getItem('dark-mode') === 'enabled';
@@ -359,13 +279,12 @@
             } else {
                 localStorage.setItem('dark-mode', 'enabled');
             }
-            applyDarkModePreference(); // Aplica a nova preferência imediatamente
+            applyDarkModePreference();
         }
 
         // Verifica o estado de autenticação
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                // ESSENCIAL: Armazena o UID do utilizador na variável global
                 currentUserUid = user.uid;
 
                 let userName = user.displayName;
@@ -373,37 +292,51 @@
                 // Exibe o nome do utilizador e a primeira letra no avatar
                 const userNameElement = document.getElementById('user-nome');
                 if (userNameElement) {
-                    // Usa o nome do Firebase Auth, ou 'Utilizador' como padrão
                     userNameElement.textContent = userName || user.email.split('@')[0];
                 }
 
                 const userAvatarCharElement = document.getElementById('user-avatar-char');
                 if (userAvatarCharElement) {
-                    // Usa a primeira letra do nome, ou 'U' como padrão
                     userAvatarCharElement.textContent = userName ? userName.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase();
                 }
 
                 const userQuestionnaireRef = doc(db, "user_questionnaires", user.uid);
-                const userQuestionnaireSnap = await getDoc(userQuestionnaireRef);
+                try {
+                    const userQuestionnaireSnap = await getDoc(userQuestionnaireRef);
 
-                if (!userQuestionnaireSnap.exists() || userQuestionnaireSnap.data().hasPaid !== true) {
-                    window.location.href = 'pagamento.html';
-                } else if (userQuestionnaireSnap.exists() && !userQuestionnaireSnap.data().objetivo) {
-                    window.location.href = 'questionario.html';
-                } else {
-                    displayWorkoutPlan(userQuestionnaireSnap.data());
+                    // Adicionado log para verificar se o documento do questionário existe
+                    console.log("Documento do questionário existe:", userQuestionnaireSnap.exists());
+                    // Adicionado log para verificar os dados do questionário
+                    console.log("Dados do questionário:", userQuestionnaireSnap.exists() ? userQuestionnaireSnap.data() : "N/A");
+
+                    if (!userQuestionnaireSnap.exists() || userQuestionnaireSnap.data().hasPaid !== true) {
+                        console.log("Redirecionando para pagamento.html: Usuário não tem questionário ou não pagou.");
+                        window.location.href = 'pagamento.html';
+                    } else if (!userQuestionnaireSnap.data().objetivo) { // Simplificado para verificar apenas 'objetivo'
+                        console.log("Redirecionando para questionario.html: Usuário pagou, mas não preencheu o objetivo.");
+                        window.location.href = 'questionario.html';
+                    } else {
+                        console.log("Usuário logado e com dados completos. Carregando plano.");
+                        const data = userQuestionnaireSnap.data();
+                        userFavorites = data.favoritedItems || []; // Carrega os favoritos do usuário
+                        displayWorkoutPlan(data);
+                    }
+                } catch (error) {
+                    console.error("Erro ao buscar dados do questionário do usuário:", error);
+                    // Mensagem para o usuário em caso de erro na busca do Firestore
+                    const workoutContainer = document.getElementById('dynamic-workout-plan');
+                    workoutContainer.innerHTML = `<p style="text-align: center; color: red;">Ocorreu um erro ao carregar seus dados. Por favor, tente novamente mais tarde.</p>`;
                 }
             } else {
+                console.log("Nenhum usuário logado. Redirecionando para login.html");
                 window.location.href = 'login.html';
             }
         });
 
         // Lógica de Logout
         document.addEventListener('DOMContentLoaded', () => {
-            // Aplica a preferência de modo escuro ao carregar a página
             applyDarkModePreference(); 
 
-            // Adiciona listener ao botão de toggle do modo escuro
             const darkModeToggleButton = document.getElementById('dark-mode-toggle');
             if (darkModeToggleButton) {
                 darkModeToggleButton.addEventListener('click', toggleDarkMode);
