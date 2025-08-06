@@ -98,7 +98,7 @@ export const workoutPlans = {
                     duration: '20 min',
                     durationMinutes: 20,
                     intensity: 'Intenso',
-                    type: 'Cardio', // <-- Certifique-se que está assim
+                    type: 'Cardio', 
                     equipment: 'Nenhum',
                     description: 'Exercícios para Emagrecer Rápido'
                 },
@@ -109,7 +109,7 @@ export const workoutPlans = {
                     duration: '10 min',
                     durationMinutes: 10,
                     intensity: 'Moderado',
-                    type: 'Cardio', // <-- Certifique-se que está assim
+                    type: 'Cardio',
                     equipment: 'Nenhum',
                     description: 'Versão de baixo impacto do polichinelo, ideal para aquecimento e condicionamento.'
                 }
