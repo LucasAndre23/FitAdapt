@@ -60,7 +60,6 @@
             text-decoration: none;
             font-weight: 600;
             transition: opacity 0.3s ease;
-            /* align-self: flex-end; REMOVIDO, agora controlado pelo .actions */
         }
 
         .article-card .read-more:hover {
@@ -233,6 +232,92 @@
         body.dark-mode .favorite-button:hover .icon {
             color: #FFD700;
         }
+
+        /* Estilos para a seção de filtros (reutilizados de arealogad) */
+        .filters-section {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            padding: 2rem;
+            margin-bottom: 2.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .filters-section label {
+            font-weight: 600;
+            color: #333;
+            margin-right: 0.5rem;
+        }
+
+        .filters-section select,
+        .filters-section input[type="text"] { /* Alterado para text para busca de texto */
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: 'Open Sans', sans-serif;
+            font-size: 0.95rem;
+            color: #555;
+            background-color: #f9f9f9;
+            transition: border-color 0.3s ease;
+        }
+
+        .filters-section select:focus,
+        .filters-section input[type="text"]:focus {
+            border-color: #007BFF;
+            outline: none;
+        }
+
+        .filters-section .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .filters-section button {
+            background-color: #087234;
+            background-image: linear-gradient(135deg, #087234, #02fdd3);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: opacity 0.3s ease;
+        }
+
+        .filters-section button:hover {
+            opacity: 0.9;
+        }
+
+        /* Dark mode for filters */
+        body.dark-mode .filters-section {
+            background-color: #2e2e4a;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        body.dark-mode .filters-section label {
+            color: #e0e0e0;
+        }
+        body.dark-mode .filters-section select,
+        body.dark-mode .filters-section input[type="text"] {
+            background-color: #3a3a5e;
+            border-color: #4a4a6e;
+            color: #c0c0c0;
+        }
+        body.dark-mode .filters-section select:focus,
+        body.dark-mode .filters-section input[type="text"]:focus {
+            border-color: #00BFFF;
+        }
+        body.dark-mode .filters-section button {
+            background-image: none;
+            background-color: #4a4a6e;
+        }
+        body.dark-mode .filters-section button:hover {
+            background-color: #5a5a7e;
+        }
     </style>
 </head>
 <body>
@@ -242,7 +327,7 @@
             <ul>
                 <li><a href="arealogad.html">Meu Plano</a></li>
                 <li><a href="artigos.html">Artigos e Dicas</a></li>
-                <li><a href="meus-favoritos.html">Meus Favoritos</a></li> <!-- NOVO LINK -->
+                <li><a href="meus-favoritos.html">Meus Favoritos</a></li>
             </ul>
         </nav>
         <div class="user-info">
@@ -261,6 +346,25 @@
         <h1>Artigos e Dicas de Bem-Estar</h1>
         <p class="subtitle" style="text-align: center; margin-bottom: 3rem;">Conteúdo exclusivo para você se manter informado e motivado.</p>
         
+        <!-- NOVO: Seção de Filtros para Artigos -->
+        <section class="filters-section">
+            <div class="filter-group">
+                <label for="filter-category">Categoria:</label>
+                <select id="filter-category">
+                    <option value="">Todas</option>
+                    <option value="Nutrição">Nutrição</option>
+                    <option value="Saúde Mental">Saúde Mental</option>
+                    <option value="Motivação">Motivação</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="search-articles">Buscar:</label>
+                <input type="text" id="search-articles" placeholder="Título ou Resumo">
+            </div>
+            <button id="apply-article-filters-btn">Aplicar Filtros</button>
+            <button id="clear-article-filters-btn">Limpar Filtros</button>
+        </section>
+
         <div id="articles-container">
             <!-- Artigos serão carregados aqui pelo JavaScript -->
             <p style="text-align: center;">Carregando artigos...</p>
@@ -286,17 +390,19 @@
         let userFavorites = []; // Variável para armazenar os favoritos do usuário
 
         // Função para exibir os artigos
-        async function displayArticles() {
+        async function displayArticles(filteredArticles = null) {
             const articlesContainer = document.getElementById('articles-container');
             articlesContainer.innerHTML = ''; // Limpa o conteúdo anterior
 
+            const articlesToRender = filteredArticles !== null ? filteredArticles : articles;
+
             // Verifica se há artigos para exibir
-            if (!articles || articles.length === 0) {
-                articlesContainer.innerHTML = `<p style="text-align: center;">Nenhum artigo disponível no momento.</p>`;
+            if (!articlesToRender || articlesToRender.length === 0) {
+                articlesContainer.innerHTML = `<p style="text-align: center;">Nenhum artigo disponível no momento ou encontrado com os filtros aplicados.</p>`;
                 return;
             }
 
-            articles.forEach(article => {
+            articlesToRender.forEach(article => {
                 const articleCard = document.createElement('div');
                 articleCard.classList.add('article-card');
                 const isFavorited = userFavorites.includes(article.id); // Verifica se já é favorito
@@ -304,7 +410,7 @@
                 articleCard.innerHTML = `
                     <h2>${article.title}</h2>
                     <p>${article.summary}</p>
-                    <div class="actions"> <!-- NOVO: Container para os botões -->
+                    <div class="actions"> <!-- Container para os botões -->
                         <a href="artigo-detalhe.html?id=${article.id}" class="read-more">Ler Mais</a>
                         <button class="favorite-button ${isFavorited ? 'favorited' : ''}" data-item-id="${article.id}" data-item-type="artigo">
                             <span class="icon">${isFavorited ? '★' : '☆'}</span>
@@ -314,13 +420,43 @@
                 articlesContainer.appendChild(articleCard);
             });
 
-            // NOVO: Adiciona event listeners para os botões de favoritar
+            // Adiciona event listeners para os botões de favoritar
             document.querySelectorAll('.favorite-button').forEach(button => {
                 button.addEventListener('click', handleFavoriteClick);
             });
         }
 
-        // NOVO: Função para lidar com o clique no botão de favoritar (reutilizada)
+        // NOVO: Função para aplicar os filtros de artigo
+        function applyArticleFilters() {
+            const filterCategory = document.getElementById('filter-category').value;
+            const searchTerm = document.getElementById('search-articles').value.toLowerCase();
+
+            let filtered = articles.filter(article => {
+                let matches = true;
+
+                if (filterCategory && article.category !== filterCategory) {
+                    matches = false;
+                }
+                if (searchTerm && 
+                    !(article.title.toLowerCase().includes(searchTerm) || 
+                      article.summary.toLowerCase().includes(searchTerm))) {
+                    matches = false;
+                }
+
+                return matches;
+            });
+
+            displayArticles(filtered);
+        }
+
+        // NOVO: Função para limpar os filtros de artigo
+        function clearArticleFilters() {
+            document.getElementById('filter-category').value = '';
+            document.getElementById('search-articles').value = '';
+            displayArticles(); // Re-exibe todos os artigos
+        }
+
+        // Função para lidar com o clique no botão de favoritar
         async function handleFavoriteClick(event) {
             const button = event.currentTarget;
             const itemId = button.dataset.itemId;
@@ -409,7 +545,7 @@
                 const userQuestionnaireRef = doc(db, "user_questionnaires", user.uid);
                 const userQuestionnaireSnap = await getDoc(userQuestionnaireRef);
 
-                // NOVO: Carrega os favoritos do usuário aqui também
+                // Carrega os favoritos do usuário aqui também
                 userFavorites = userQuestionnaireSnap.data()?.favoritedItems || [];
 
                 if (!userQuestionnaireSnap.exists() || userQuestionnaireSnap.data().hasPaid !== true) {
@@ -418,6 +554,9 @@
                     window.location.href = 'questionario.html';
                 } else {
                     displayArticles(); // Chama a função para exibir os artigos
+                    // Adiciona listeners aos botões de filtro
+                    document.getElementById('apply-article-filters-btn').addEventListener('click', applyArticleFilters);
+                    document.getElementById('clear-article-filters-btn').addEventListener('click', clearArticleFilters);
                 }
             } else {
                 window.location.href = 'login.html'; // Redireciona para login se não estiver autenticado

@@ -8,7 +8,93 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Open+Sans:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    
+    <style>
+        /* Estilos adicionais para os filtros */
+        .filters-section {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            padding: 2rem;
+            margin-bottom: 2.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .filters-section label {
+            font-weight: 600;
+            color: #333;
+            margin-right: 0.5rem;
+        }
+
+        .filters-section select,
+        .filters-section input[type="number"] {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: 'Open Sans', sans-serif;
+            font-size: 0.95rem;
+            color: #555;
+            background-color: #f9f9f9;
+            transition: border-color 0.3s ease;
+        }
+
+        .filters-section select:focus,
+        .filters-section input[type="number"]:focus {
+            border-color: #007BFF;
+            outline: none;
+        }
+
+        .filters-section .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .filters-section button {
+            background-color: #087234;
+            background-image: linear-gradient(135deg, #087234, #02fdd3);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: opacity 0.3s ease;
+        }
+
+        .filters-section button:hover {
+            opacity: 0.9;
+        }
+
+        /* Dark mode for filters */
+        body.dark-mode .filters-section {
+            background-color: #2e2e4a;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        body.dark-mode .filters-section label {
+            color: #e0e0e0;
+        }
+        body.dark-mode .filters-section select,
+        body.dark-mode .filters-section input[type="number"] {
+            background-color: #3a3a5e;
+            border-color: #4a4a6e;
+            color: #c0c0c0;
+        }
+        body.dark-mode .filters-section select:focus,
+        body.dark-mode .filters-section input[type="number"]:focus {
+            border-color: #00BFFF; /* Light blue for dark mode focus */
+        }
+        body.dark-mode .filters-section button {
+            background-image: none;
+            background-color: #4a4a6e;
+        }
+        body.dark-mode .filters-section button:hover {
+            background-color: #5a5a7e;
+        }
+    </style>
 </head>
 <body>
     <header class="user-header">
@@ -41,6 +127,47 @@
             <span id="progress-text" class="progress-text">Carregando Progresso...</span>
         </div>
 
+        <!-- Seção de Filtros para Treinos -->
+        <section class="filters-section">
+            <div class="filter-group">
+                <label for="filter-type">Tipo:</label>
+                <select id="filter-type">
+                    <option value="">Todos</option>
+                    <option value="Alongamento">Alongamento</option>
+                    <option value="Mobilidade">Mobilidade</option>
+                    <option value="Força">Força</option>
+                    <option value="Cardio">Cardio</option> <!-- <-- Certifique-se que está assim -->
+                    <option value="Reabilitação">Reabilitação</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="filter-intensity">Intensidade:</label>
+                <select id="filter-intensity">
+                    <option value="">Todas</option>
+                    <option value="Baixíssima">Baixíssima</option>
+                    <option value="Leve">Leve</option>
+                    <option value="Moderado">Moderado</option>
+                    <option value="Intenso">Intenso</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="filter-duration">Duração (min):</label>
+                <input type="number" id="filter-duration" min="1" placeholder="Max. Duração">
+            </div>
+            <div class="filter-group">
+                <label for="filter-equipment">Equipamento:</label>
+                <select id="filter-equipment">
+                    <option value="">Todos</option>
+                    <option value="Nenhum">Nenhum</option>
+                    <option value="Cadeira">Cadeira</option>
+                    <option value="Pesos Leves">Pesos Leves</option>
+                    <option value="Elástico">Elástico</option>
+                </select>
+            </div>
+            <button id="apply-filters-btn">Aplicar Filtros</button>
+            <button id="clear-filters-btn">Limpar Filtros</button>
+        </section>
+
         <div class="articles-promo-card">
             <h2>📚 Artigos e Dicas de Bem-Estar</h2>
             <p>Explore nosso acervo de artigos sobre nutrição, saúde mental, motivação e muito mais. Conteúdo exclusivo para complementar seu plano de treino!</p>
@@ -64,11 +191,14 @@
         import { doc, getDoc, updateDoc, arrayUnion, arrayRemove } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js';
 
         // Importa os planos de treino de content-data.js
-        import { workoutPlans } from './content-data.js'; // AGORA IMPORTADO CORRETAMENTE
+        import { workoutPlans } from './content-data.js'; 
+        // Importa a função de notificação (se estiver usando)
+        // import { setupNotifications } from './firebase-messaging-init.js'; 
 
         let currentUserUid = null;
         let userQuestionnaireData = null;
         let userFavorites = [];
+        let currentWorkoutPlanData = []; // Armazena o plano completo do usuário para filtragem
 
         // Função para calcular e exibir o progresso
         function updateProgressDisplay() {
@@ -99,17 +229,16 @@
         }
 
         // Função para exibir o plano de treino com base nos dados do questionário
-        async function displayWorkoutPlan(questionnaireData) {
+        async function displayWorkoutPlan(questionnaireData, filteredExercises = null) {
             userQuestionnaireData = questionnaireData;
             const workoutContainer = document.getElementById('dynamic-workout-plan');
             workoutContainer.innerHTML = '';
 
-            // Adicionado log para verificar o objetivo do usuário
             console.log("Objetivo do usuário:", userQuestionnaireData.objetivo);
 
             let planToDisplay = workoutPlans[userQuestionnaireData.objetivo] || workoutPlans['default'];
+            currentWorkoutPlanData = planToDisplay; // Salva o plano completo para filtragem
 
-            // Adicionado log para verificar o plano selecionado
             console.log("Plano de treino selecionado:", planToDisplay);
 
             if (!planToDisplay || planToDisplay.length === 0) {
@@ -124,44 +253,52 @@
 
             const completedExercisesSet = new Set(userQuestionnaireData.completedExercises || []);
 
-            planToDisplay.forEach(dayPlan => {
-                const daySection = document.createElement('section');
-                daySection.classList.add('day-section');
-                daySection.innerHTML = `<h2>📅 ${dayPlan.dayTitle}</h2>`;
+            // Se filteredExercises for fornecido, usa-o. Caso contrário, usa todos os exercícios do plano.
+            const exercisesToRender = filteredExercises !== null ? filteredExercises : planToDisplay.flatMap(day => day.exercises);
 
-                dayPlan.exercises.forEach(exercise => {
-                    const exerciseCard = document.createElement('div');
-                    exerciseCard.classList.add('exercise-card');
-                    const exerciseId = exercise.id; 
+            if (exercisesToRender.length === 0) {
+                workoutContainer.innerHTML = `<p style="text-align: center;">Nenhum treino encontrado com os filtros aplicados.</p>`;
+                return;
+            }
 
-                    const isCompleted = completedExercisesSet.has(exerciseId);
-                    const isFavorited = userFavorites.includes(exerciseId);
-                    
-                    exerciseCard.innerHTML = `
-                        <div class="exercise-video">
-                            <iframe width="1310" height="737" src="${exercise.videoUrl}" title="${exercise.title}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            const filteredDaySection = document.createElement('section');
+            filteredDaySection.classList.add('day-section');
+            filteredDaySection.innerHTML = `<h2>Treinos Encontrados</h2>`; 
+
+            exercisesToRender.forEach(exercise => {
+                const exerciseCard = document.createElement('div');
+                exerciseCard.classList.add('exercise-card');
+                const exerciseId = exercise.id; 
+
+                const isCompleted = completedExercisesSet.has(exerciseId);
+                const isFavorited = userFavorites.includes(exerciseId);
+                
+                exerciseCard.innerHTML = `
+                    <div class="exercise-video">
+                        <iframe width="1310" height="737" src="${exercise.videoUrl}" title="${exercise.title}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                    </div>
+                    <div class="exercise-details">
+                        <h3>${exercise.title}</h3>
+                        <div class="exercise-meta">
+                            <span class="badge">⏱ ${exercise.duration}</span>
+                            <span class="badge">💪 ${exercise.intensity}</span>
+                            <span class="badge">Tipo: ${exercise.type}</span> 
+                            <span class="badge">Equipamento: ${exercise.equipment}</span> 
                         </div>
-                        <div class="exercise-details">
-                            <h3>${exercise.title}</h3>
-                            <div class="exercise-meta">
-                                <span class="badge">⏱ ${exercise.duration}</span>
-                                <span class="badge">💪 ${exercise.intensity}</span>
-                            </div>
-                            <p>${exercise.description}</p>
-                            <div class="actions">
-                                <button class="cta-button mark-as-done-button ${isCompleted ? 'completed' : ''}" data-exercise-id="${exerciseId}">
-                                    ${isCompleted ? 'Concluído!' : 'Marcar como concluído'}
-                                </button>
-                                <button class="favorite-button ${isFavorited ? 'favorited' : ''}" data-item-id="${exerciseId}" data-item-type="treino">
-                                    <span class="icon">${isFavorited ? '★' : '☆'}</span>
-                                </button>
-                            </div>
+                        <p>${exercise.description}</p>
+                        <div class="actions">
+                            <button class="cta-button mark-as-done-button ${isCompleted ? 'completed' : ''}" data-exercise-id="${exerciseId}">
+                                ${isCompleted ? 'Concluído!' : 'Marcar como concluído'}
+                            </button>
+                            <button class="favorite-button ${isFavorited ? 'favorited' : ''}" data-item-id="${exerciseId}" data-item-type="treino">
+                                <span class="icon">${isFavorited ? '★' : '☆'}</span>
+                            </button>
                         </div>
-                    `;
-                    daySection.appendChild(exerciseCard);
-                });
-                workoutContainer.appendChild(daySection);
+                    </div>
+                `;
+                filteredDaySection.appendChild(exerciseCard);
             });
+            workoutContainer.appendChild(filteredDaySection);
 
             document.querySelectorAll('.mark-as-done-button').forEach(button => {
                 button.addEventListener('click', handleMarkAsDone);
@@ -172,6 +309,47 @@
             });
 
             updateProgressDisplay();
+        }
+
+        // Função para aplicar os filtros de treino
+        function applyWorkoutFilters() {
+            const filterType = document.getElementById('filter-type').value;
+            const filterIntensity = document.getElementById('filter-intensity').value;
+            const filterDuration = parseInt(document.getElementById('filter-duration').value); 
+            const filterEquipment = document.getElementById('filter-equipment').value;
+
+            let allExercises = currentWorkoutPlanData.flatMap(day => day.exercises);
+
+            let filtered = allExercises.filter(exercise => {
+                let matches = true;
+
+                if (filterType && exercise.type !== filterType) {
+                    matches = false;
+                }
+                if (filterIntensity && exercise.intensity !== filterIntensity) {
+                    matches = false;
+                }
+                // Filtra por duração máxima
+                if (!isNaN(filterDuration) && exercise.durationMinutes > filterDuration) {
+                    matches = false;
+                }
+                if (filterEquipment && exercise.equipment !== filterEquipment) {
+                    matches = false;
+                }
+
+                return matches;
+            });
+
+            displayWorkoutPlan(userQuestionnaireData, filtered);
+        }
+
+        // Função para limpar os filtros de treino
+        function clearWorkoutFilters() {
+            document.getElementById('filter-type').value = '';
+            document.getElementById('filter-intensity').value = '';
+            document.getElementById('filter-duration').value = '';
+            document.getElementById('filter-equipment').value = '';
+            displayWorkoutPlan(userQuestionnaireData); // Re-exibe o plano completo
         }
 
         // Função que lida com o clique no botão "Marcar como concluído"
@@ -304,26 +482,28 @@
                 try {
                     const userQuestionnaireSnap = await getDoc(userQuestionnaireRef);
 
-                    // Adicionado log para verificar se o documento do questionário existe
                     console.log("Documento do questionário existe:", userQuestionnaireSnap.exists());
-                    // Adicionado log para verificar os dados do questionário
                     console.log("Dados do questionário:", userQuestionnaireSnap.exists() ? userQuestionnaireSnap.data() : "N/A");
 
                     if (!userQuestionnaireSnap.exists() || userQuestionnaireSnap.data().hasPaid !== true) {
                         console.log("Redirecionando para pagamento.html: Usuário não tem questionário ou não pagou.");
                         window.location.href = 'pagamento.html';
-                    } else if (!userQuestionnaireSnap.data().objetivo) { // Simplificado para verificar apenas 'objetivo'
+                    } else if (!userQuestionnaireSnap.data().objetivo) { 
                         console.log("Redirecionando para questionario.html: Usuário pagou, mas não preencheu o objetivo.");
                         window.location.href = 'questionario.html';
                     } else {
                         console.log("Usuário logado e com dados completos. Carregando plano.");
                         const data = userQuestionnaireSnap.data();
-                        userFavorites = data.favoritedItems || []; // Carrega os favoritos do usuário
-                        displayWorkoutPlan(data);
+                        userFavorites = data.favoritedItems || []; 
+                        
+                        displayWorkoutPlan(data); // Exibe o plano inicial
+
+                        // Adiciona listeners aos botões de filtro
+                        document.getElementById('apply-filters-btn').addEventListener('click', applyWorkoutFilters);
+                        document.getElementById('clear-filters-btn').addEventListener('click', clearWorkoutFilters);
                     }
                 } catch (error) {
                     console.error("Erro ao buscar dados do questionário do usuário:", error);
-                    // Mensagem para o usuário em caso de erro na busca do Firestore
                     const workoutContainer = document.getElementById('dynamic-workout-plan');
                     workoutContainer.innerHTML = `<p style="text-align: center; color: red;">Ocorreu um erro ao carregar seus dados. Por favor, tente novamente mais tarde.</p>`;
                 }
