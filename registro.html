@@ -57,58 +57,59 @@
         // import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js';
 
         // Lógica de verificação de autenticação e redirecionamento
-        // Este onAuthStateChanged agora apenas redireciona para a página de planos.
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                // Redireciona diretamente para a página de planos após login/registro.
-                window.location.href = 'planos.html';
+// Este onAuthStateChanged agora redireciona para a loja virtual.
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        // Redireciona diretamente para a loja virtual após login/registro.
+        // A URL foi alterada de 'planos.html' para a loja da Nuvemshop.
+        window.location.href = 'https://fitadapt3.lojavirtualnuvem.com.br/';
+    }
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    const registerForm = document.getElementById('register-form');
+    const googleSignInButton = document.getElementById('google-signin-button');
+
+    // Lógica para registro com E-mail e Senha
+    if (registerForm) {
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('reg-email').value;
+            const password = document.getElementById('reg-password').value;
+            const nome = document.getElementById('reg-nome').value;
+
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                await updateProfile(user, {
+                    displayName: nome
+                });
+                // O onAuthStateChanged vai cuidar do redirecionamento após o registro.
+            } catch (error) {
+                alert(`Erro ao registrar: ${error.message}`);
+                console.error('Erro de registro:', error);
             }
         });
+    }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const registerForm = document.getElementById('register-form');
-            const googleSignInButton = document.getElementById('google-signin-button');
-
-            // Lógica para registro com E-mail e Senha
-            if (registerForm) {
-                registerForm.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    const email = document.getElementById('reg-email').value;
-                    const password = document.getElementById('reg-password').value;
-                    const nome = document.getElementById('reg-nome').value;
-
-                    try {
-                        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                        const user = userCredential.user;
-
-                        await updateProfile(user, {
-                            displayName: nome
-                        });
-                        // O onAuthStateChanged vai cuidar do redirecionamento após o registro.
-                    } catch (error) {
-                        alert(`Erro ao registrar: ${error.message}`);
-                        console.error('Erro de registro:', error);
-                    }
-                });
-            }
-
-            // Lógica para registro/login com Google
-            if (googleSignInButton) {
-                googleSignInButton.addEventListener('click', async () => {
-                    try {
-                        await signInWithPopup(auth, googleProvider);
-                        // O onAuthStateChanged vai cuidar do redirecionamento após o login.
-                    } catch (error) { 
-                        if (error.code === 'auth/popup-closed-by-user') {
-                            alert('O pop-up de login do Google foi fechado. Por favor, tente novamente.');
-                        } else {
-                            alert(`Erro ao fazer login com Google: ${error.message}`);
-                        }
-                        console.error('Erro de login com Google:', error);
-                    }
-                });
+    // Lógica para registro/login com Google
+    if (googleSignInButton) {
+        googleSignInButton.addEventListener('click', async () => {
+            try {
+                await signInWithPopup(auth, googleProvider);
+                // O onAuthStateChanged vai cuidar do redirecionamento após o login.
+            } catch (error) {
+                if (error.code === 'auth/popup-closed-by-user') {
+                    alert('O pop-up de login do Google foi fechado. Por favor, tente novamente.');
+                } else {
+                    alert(`Erro ao fazer login com Google: ${error.message}`);
+                }
+                console.error('Erro de login com Google:', error);
             }
         });
+    }
+});
     </script>
 
     

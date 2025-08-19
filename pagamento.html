@@ -2,319 +2,62 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <!-- Adiciona o redirecionamento automático após 5 segundos -->
+    <meta http-equiv="refresh" content="5; url=https://fitadapt3.lojavirtualnuvem.com.br/">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FitAdapt - Pagamento</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Open+Sans:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <title>FitAdapt - Redirecionando para a Loja</title>
+    <!-- Inclui o framework Tailwind CSS para o estilo -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Estilos para o header da área logada (consistente com outras páginas) */
+        /* Estilos customizados para a fonte 'Inter' */
+        body {
+            font-family: 'Inter', sans-serif;
+            @apply bg-gray-50 text-gray-800;
+        }
+
+        /* Estilos de fundo para o cabeçalho */
         .user-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 2rem;
-            background-color: #6a11cb;
-            background-image: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
-            color: white;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            background-image: linear-gradient(to right, #087234 0%,  #02fdd3 100%);
         }
 
-        .user-header .logo {
-            font-family: 'Poppins', sans-serif;
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: white;
-            text-decoration: none;
-        }
-
-        .user-header .user-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .user-header .user-info span {
-            font-size: 1rem;
-        }
-
-        .user-header .user-avatar {
-            width: 40px;
-            height: 40px;
-            background-color: #f0f0f0;
-            color: #2575fc;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-weight: 700;
-            font-size: 1.2rem;
-        }
-
-        .user-header .small-button {
-            padding: 8px 15px;
-            font-size: 0.9rem;
-            border-radius: 8px;
-            background-color: #f44336; /* Cor para o botão de sair */
-            background-image: none;
-            border: none;
-            color: white;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .user-header .small-button:hover {
-            background-color: #d32f2f;
-        }
-
-        /* Estilos para a seção de pagamento */
-        .payment-section {
-            padding: 4rem 1rem;
-            max-width: 600px;
-            margin: 2rem auto;
-            background-color: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-
-        .payment-section h1 {
-            font-family: 'Poppins', sans-serif;
-            font-size: 2.2rem;
-            color: #333;
-            margin-bottom: 1.5rem;
-        }
-
-        .payment-section .subtitle {
-            font-size: 1.1rem;
-            color: #666;
-            margin-bottom: 2rem;
-        }
-
-        .payment-form .form-group {
-            margin-bottom: 1.5rem;
-            text-align: left;
-        }
-
-        .payment-form label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: #2D3748;
-        }
-
-        .payment-form input[type="text"],
-        .payment-form input[type="email"],
-        .payment-form input[type="tel"],
-        .payment-form input[type="number"],
-        .payment-form input[type="date"],
-        .payment-form select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-family: 'Open Sans', sans-serif;
-            font-size: 1rem;
-            box-sizing: border-box; /* Garante que padding e border não aumentem a largura */
-        }
-
-        .payment-form .flex-group {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .payment-form .flex-group > div {
-            flex: 1;
-        }
-
-        .payment-form .cta-button {
-            width: 100%;
-            padding: 15px;
-            font-size: 1.1rem;
-            margin-top: 2rem;
-            background-color: #6a11cb;
-            background-image: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: opacity 0.3s ease;
-        }
-
-        .payment-form .cta-button:hover {
-            opacity: 0.9;
-        }
-
-        .loading-message {
-            margin-top: 1.5rem;
-            font-size: 1rem;
-            color: #2575fc;
-            font-weight: 600;
-            display: none; /* Escondido por padrão */
+        /* Estilos para o rodapé */
+        footer {
+            @apply bg-gray-800 text-gray-300 py-4 text-center;
         }
     </style>
 </head>
-<body>
-    <header class="user-header">
-        <a href="index.html" class="logo">FitAdapt</a>
-        <!-- Não há navegação aqui, pois o foco é o pagamento -->
-        <div class="user-info">
-            <span>Olá, <strong id="user-nome"></strong></span>
-             <a href="perfil.html" class="user-avatar-link">
-                <div class="user-avatar" id="user-avatar-char">U</div>
-            </a>
-            <button id="logout-button" class="cta-button small-button">Sair</button>
+<body class="flex flex-col min-h-screen">
+    <header class="user-header text-white shadow-lg p-4 flex justify-between items-center">
+        <a href="index.html" class="font-bold text-2xl tracking-wide">FitAdapt</a>
+        <div class="flex items-center space-x-4">
+            <span class="text-sm md:text-base">Olá, <strong id="user-nome">Usuário</strong></span>
+            <a href="#" class="w-10 h-10 bg-white text-blue-500 rounded-full flex justify-center items-center font-bold text-xl">U</a>
+            <a href="#" class="px-4 py-2 text-sm bg-red-500 hover:bg-red-600 rounded-lg transition-colors">Sair</a>
         </div>
     </header>
 
-    <main class="payment-section">
-        <h1>Confirme seu Pagamento</h1>
-        <p class="subtitle">Complete os detalhes para ativar seu plano FitAdapt.</p>
-        
-        <form id="payment-form" class="payment-form">
-            <div class="form-group">
-                <label for="card-name">Nome no Cartão</label>
-                <input type="text" id="card-name" placeholder="Seu nome completo" required>
+    <main class="flex-grow flex justify-center items-center p-4">
+        <div class="bg-white p-8 md:p-12 rounded-2xl shadow-xl text-center max-w-lg">
+            <div class="flex justify-center mb-6">
+                <!-- Ícone de redirecionamento (Fonte: Lucide-react) -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#2575fc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shopping-cart"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
             </div>
-            <div class="form-group">
-                <label for="card-number">Número do Cartão</label>
-                <input type="tel" id="card-number" placeholder="XXXX XXXX XXXX XXXX" pattern="[0-9]{13,16}" required>
-            </div>
-            <div class="flex-group">
-                <div class="form-group">
-                    <label for="expiry-date">Validade</label>
-                    <input type="text" id="expiry-date" placeholder="MM/AA" pattern="(0[1-9]|1[0-2])\/[0-9]{2}" required>
-                </div>
-                <div class="form-group">
-                    <label for="cvv">CVV</label>
-                    <input type="number" id="cvv" placeholder="XXX" pattern="[0-9]{3,4}" required>
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="cpf">CPF</label>
-                <input type="text" id="cpf" placeholder="000.000.000-00" pattern="\d{3}\.\d{3}\.\d{3}-\d{2}" required>
-            </div>
-
-            <button type="submit" class="cta-button">Confirmar Pagamento</button>
-            <p id="loading-message" class="loading-message">Processando pagamento...</p>
-        </form>
+            <h1 class="text-3xl font-bold mb-4">Redirecionando para a Loja Virtual</h1>
+            <p class="text-lg text-gray-600 mb-6">
+                Estamos te levando para a loja oficial do FitAdapt.
+                Se você não for redirecionado automaticamente, clique no botão abaixo.
+            </p>
+            <a href="https://fitadapt3.lojavirtualnuvem.com.br/" 
+               class="inline-block px-8 py-4 font-bold text-white rounded-lg transition-transform transform hover:scale-105"
+               style="background-image: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);">
+                Ir para a Loja Virtual
+            </a>
+        </div>
     </main>
 
     <footer>
         <p>© 2025 FitAdapt - Todos os direitos reservados</p>
-        <p>contato@fitadapt.com.br | (55) 83 9999-9999 </p>
+        <p>contato@fitadapt.com.br | (55) 83 9999-9999</p>
     </footer>
-
-    <script type="module">
-        // Importa as instâncias do Firebase do arquivo compartilhado
-        import { auth, db } from './firebase-init.js';
-        // Importa módulos Firebase específicos necessários para esta página
-        import { onAuthStateChanged, signOut, updateProfile } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js';
-        import { doc, getDoc, updateDoc } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js';
-
-        let currentUserUid = null; // Variável para armazenar o UID do usuário atual
-
-        // Função para simular o processamento do pagamento e atualizar o Firestore
-        async function processPayment(event) {
-            event.preventDefault(); // Impede o envio padrão do formulário
-
-            const loadingMessage = document.getElementById('loading-message');
-            const submitButton = document.querySelector('#payment-form .cta-button');
-
-            submitButton.disabled = true; // Desabilita o botão para evitar múltiplos cliques
-            loadingMessage.style.display = 'block'; // Mostra a mensagem de carregamento
-
-            if (!currentUserUid) {
-                alert('Erro: Usuário não logado. Redirecionando para login.');
-                window.location.href = 'login.html';
-                return;
-            }
-
-            const userQuestionnaireRef = doc(db, "user_questionnaires", currentUserUid);
-
-            try {
-                // Simula um atraso de processamento de pagamento
-                await new Promise(resolve => setTimeout(resolve, 2000)); 
-
-                // Atualiza o documento do usuário no Firestore para marcar como pago
-                await updateDoc(userQuestionnaireRef, {
-                    hasPaid: true,
-                    paymentDate: new Date().toISOString() // Registra a data do pagamento
-                });
-
-                alert('Pagamento confirmado com sucesso! Redirecionando para seu plano...');
-                
-                // Após o pagamento, verifica se o questionário já foi preenchido
-                const userQuestionnaireSnap = await getDoc(userQuestionnaireRef);
-                if (userQuestionnaireSnap.exists() && userQuestionnaireSnap.data().objetivo) {
-                    // Se o questionário já foi preenchido, vai para a área logada
-                    window.location.href = 'arealogad.html';
-                } else {
-                    // Se o questionário ainda não foi preenchido, vai para o questionário
-                    window.location.href = 'questionario.html';
-                }
-
-            } catch (error) {
-                alert(`Erro ao processar pagamento: ${error.message}`);
-                console.error('Erro no processamento de pagamento:', error);
-            } finally {
-                submitButton.disabled = false; // Habilita o botão novamente
-                loadingMessage.style.display = 'none'; // Esconde a mensagem de carregamento
-            }
-        }
-
-        // Verifica o estado de autenticação ao carregar a página
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                currentUserUid = user.uid; // Armazena o UID do usuário
-
-                // Exibe o nome do usuário e a primeira letra no avatar
-                const userNameElement = document.getElementById('user-nome');
-                if (userNameElement) {
-                    userNameElement.textContent = user.displayName || user.email.split('@')[0];
-                }
-                const userAvatarCharElement = document.getElementById('user-avatar-char');
-                if (userAvatarCharElement) {
-                    userAvatarCharElement.textContent = user.displayName ? user.displayName.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase();
-                }
-
-                // Verifica se o usuário já pagou
-                const userQuestionnaireRef = doc(db, "user_questionnaires", user.uid);
-                const userQuestionnaireSnap = await getDoc(userQuestionnaireRef);
-
-                if (userQuestionnaireSnap.exists() && userQuestionnaireSnap.data().hasPaid === true) {
-                    // Se já pagou, redireciona para a área logada
-                    window.location.href = 'arealogad.html';
-                }
-                // Se não pagou, permanece nesta página para realizar o pagamento
-
-            } else {
-                // Usuário não logado, redireciona para a página de login
-                window.location.href = 'login.html';
-            }
-        });
-
-        // Lógica de Logout
-        document.addEventListener('DOMContentLoaded', () => {
-            const logoutButton = document.getElementById('logout-button');
-            if (logoutButton) {
-                logoutButton.addEventListener('click', async () => {
-                    try {
-                        await signOut(auth);
-                    } catch (error) {
-                        alert(`Erro ao fazer logout: ${error.message}`);
-                        console.error('Erro de logout:', error);
-                    }
-                });
-            }
-            
-            // Adiciona o event listener ao formulário de pagamento
-            const paymentForm = document.getElementById('payment-form');
-            if (paymentForm) {
-                paymentForm.addEventListener('submit', processPayment);
-            }
-        });
-    </script>
 </body>
 </html>

@@ -3,137 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitAdapt - Planos de Assinatura</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Open+Sans:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <title>FitAdapt - Planos</title>
 </head>
-
 <body>
     <header class="user-header">
-                <a href="index.html" class="logo">FitAdapt</a>
-        <div class="user-info">
-            <span>Olá, <strong id="user-nome"></strong></span>
-             <a href="perfil.html" class="user-avatar-link">
-                <div class="user-avatar" id="user-avatar-char">U</div>
-            </a>
-            <button id="logout-button" class="cta-button small-button">Sair</button>
-        </div>
-    </header>
+    <a href="index.html" class="logo">FitAdapt</a>
+         <div class="user-info">
+     <span>Olá, <strong id="user-nome"></strong></span>
+    <a href="perfil.html" class="user-avatar-link">
+    <div class="user-avatar" id="user-avatar-char">U</div>
+    </a>
+     <button id="logout-button" class="cta-button small-button">Sair</button>
+    </div>
+     </header>
 
-    <section class="pricing-section" id="planos">
-        <div class="pricing-container">
-            <h2>Nossos Planos</h2>
-            <p class="subtitle">Escolha o que melhor se adapta à sua rotina</p>
-            
-            <div class="pricing-grid">
-                <div class="pricing-card">
-                    <h3>Mensal</h3>
-                    <div class="price">R$ 70<span>/mês</span></div>
-                    <ul class="features-list">
-                        <li>✔ Acesso a todos os treinos</li>
-                        <li>✔ Atualização mensal do plano</li>
-                        <li>✔ Suporte por e-mail</li>
-                        <li>✔ 1 consultoria online</li>
-                    </ul>
-                    <button class="cta-button" data-plan="mensal">Assinar agora</button>
-                </div>
-                
-                <div class="pricing-card highlight">
-                    <div class="popular-badge">Mais popular</div>
-                    <h3>Trimestral</h3>
-                    <div class="price">R$ 180<span>/trimestre</span></div>
-                    <div class="economy">Economize R$ 30</div>
-                    <ul class="features-list">
-                        <li>✔ Todos os benefícios do mensal</li>
-                        <li>✔ Atualização quinzenal</li>
-                        <li>✔ Suporte prioritário</li>
-                        <li>✔ 3 consultorias online</li>
-                    </ul>
-                    <button class="cta-button" data-plan="trimestral">Assinar agora</button>
-                </div>
-                
-                <div class="pricing-card">
-                    <h3>Anual</h3>
-                    <div class="price">R$ 750<span>/ano</span></div>
-                    <div class="economy">Economize R$ 90</div>
-                    <ul class="features-list">
-                        <li>✔ Todos os benefícios do trimestral</li>
-                        <li>✔ Atualização semanal</li>
-                        <li>✔ Suporte 24/7</li>
-                        <li>✔ 12 consultorias online</li>
-                        <li>✔ Acesso a conteúdos exclusivos</li>
-                    </ul>
-                    <button class="cta-button" data-plan="anual">Assinar agora</button>
-                </div>
-            </div>
-        </div>
-    </section>
+    <section class="planos-section">
+     <h2>Escolha seu Plano</h2>
+    <p class="subtitle">Encontre o plano perfeito para suas necessidades e comece sua jornada FitAdapt.</p>
+    <div class="planos-container">
+    <div class="plano-card destaque" data-plano="trimestral">
+     <h3>Plano Trimestral</h3>
+     <p class="preco">R$ 149,90</p>
+     <p>Por 3 meses</p>
+     <ul>
+     <li>Acesso completo aos treinos</li>
+     <li>Planos personalizados</li>
+                    <li>Suporte via WhatsApp</li>
+    </ul>
+                <button class="cta-button assinar-button">Assinar</button>
+            </div>
+     <div class="plano-card" data-plano="mensal">
+                <h3>Plano Mensal</h3>
+                <p class="preco">R$ 59,90</p>
+                <p>Por mês</p>
+                <ul>
+                    <li>Acesso completo aos treinos</li>
+                    <li>Planos personalizados</li>
+                </ul>
+                <button class="cta-button assinar-button">Assinar</button>
+            </div>
+        </div>
+    </section>
 
-    <footer id="contact">
-        <p>© 2025 FitAdapt - Todos os direitos reservados</p>
-        <p>contato@fitadapt.com.br | (55) 83 9999-9999 </p>
-    </footer>
+    <footer>
+        <p>© 2025 FitAdapt - Todos os direitos reservados</p>
+        <p>contato@fitadapt.com.br | (55) 83 9999-9999 </p>
+    </footer>
 
-    <script type="module">
-        import { auth } from './firebase-init.js';
-        import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js';
+    <script type="module">
+        import { auth } from './firebase-init.js';
+        import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js';
 
-        // Verifica o estado de autenticação e atualiza a interface do usuário
-        onAuthStateChanged(auth, (user) => {
-            if (!user) {
-                // Se não estiver logado, redireciona para a página de login
-                window.location.href = 'login.html';
-            } else {
-                // Se estiver logado, exibe o nome e a primeira letra no avatar
-                const userNameElement = document.getElementById('user-nome');
-                const userAvatarCharElement = document.getElementById('user-avatar-char');
-                
-                // **Lógica aprimorada para obter o nome do usuário**
-                // Tenta pegar o nome de exibição (displayName), se não existir, usa a parte do e-mail antes do '@'
-                const userName = user.displayName || (user.email ? user.email.split('@')[0] : 'Usuário');
-                
-                if (userNameElement) {
-                    userNameElement.textContent = userName;
-                }
-                if (userAvatarCharElement) {
-                    userAvatarCharElement.textContent = userName.charAt(0).toUpperCase();
-                }
-            }
-        });
+        onAuthStateChanged(auth, (user) => {
+            const userNameElement = document.getElementById('user-nome');
+            const userAvatarCharElement = document.getElementById('user-avatar-char');
+            if (user) {
+                const userName = user.displayName || (user.email ? user.email.split('@')[0] : 'Usuário');
+                if (userNameElement) {
+                    userNameElement.textContent = userName;
+                }
+                if (userAvatarCharElement) {
+                    userAvatarCharElement.textContent = userName.charAt(0).toUpperCase();
+                }
+            } else {
+                window.location.href = 'login.html';
+            }
+        });
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const signinButtons = document.querySelectorAll('.pricing-card .cta-button');
+        document.addEventListener('DOMContentLoaded', () => {
+            const assinarButtons = document.querySelectorAll('.assinar-button');
+            assinarButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const plano = button.closest('.plano-card').getAttribute('data-plano');
+                    localStorage.setItem('selectedPlan', plano);
+                    
+                    // Redireciona o usuário para a loja virtual Nuvemshop para o pagamento.
+                    window.location.href = 'https://fitadapt3.lojavirtualnuvem.com.br/';
+                });
+            });
 
-            signinButtons.forEach(button => {
-                button.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    
-                    const user = auth.currentUser;
-                    if (user) {
-                        const selectedPlan = button.dataset.plan;
-                        localStorage.setItem('selectedPlan', selectedPlan);
-                        window.location.href = 'questionario.html';
-                    } else {
-                        window.location.href = 'registro.html';
-                    }
-                });
-            });
-
-            const logoutButton = document.getElementById('logout-button');
-            if (logoutButton) {
-                logoutButton.addEventListener('click', async () => {
-                    try {
-                        await signOut(auth);
-                        window.location.href = 'login.html'; 
-                    } catch (error) {
-                        alert(`Erro ao fazer logout: ${error.message}`);
-                        console.error('Erro de logout:', error);
-                    }
-                });
-            }
-        });
-    </script>
+            const logoutButton = document.getElementById('logout-button');
+            if (logoutButton) {
+                logoutButton.addEventListener('click', async () => {
+                    try {
+                        await signOut(auth);
+                        window.location.href = 'login.html';
+                     } catch (error) {
+                       console.error('Erro de logout:', error);
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>
