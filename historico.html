@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitAdapt - Histórico</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Open+Sans:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        /* Estilos específicos para a página de histórico */
+        .history-container {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            padding: 3rem;
+            margin-top: 2.5rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .history-container h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 1.5rem;
+        }
+
+        .history-container h2 {
+            font-size: 1.5rem;
+            color: #087234;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        #achievement-status {
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: #e67e22; /* Laranja para destaque */
+            margin-bottom: 2rem;
+        }
+
+        #workout-history-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #workout-history-list li {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            font-size: 1rem;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        #workout-history-list li:last-child {
+            border-bottom: none;
+        }
+        
+        #workout-history-list li .icon {
+            color: #087234;
+            font-size: 1.2rem;
+        }
+
+        /* Estilos para o Dark Mode */
+        body.dark-mode .history-container {
+            background-color: #2e2e4a;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        
+        body.dark-mode .history-container h1,
+        body.dark-mode .history-container h2,
+        body.dark-mode #workout-history-list li {
+            color: #e0e0e0;
+        }
+
+        body.dark-mode #workout-history-list li {
+            border-bottom: 1px solid #4a4a6e;
+        }
+
+        body.dark-mode #achievement-status {
+            color: #f1c40f; /* Amarelo para destaque em dark mode */
+        }
+    </style>
+</head>
+<body>
+    <header class="user-header">
+        <a href="index.html" class="logo">FitAdapt</a>
+        <nav>
+            <ul>
+                <li><a href="arealogad.html">Meu Plano</a></li>
+                <li><a href="artigos.html">Artigos e Dicas</a></li>
+                <li><a href="meus-favoritos.html">Meus Favoritos</a></li>
+                <li><a href="historico.html">Histórico</a></li> </ul>
+        </nav>
+        <div class="user-info">
+            <button id="dark-mode-toggle" class="dark-mode-toggle">
+                <span class="icon">☀️</span> Modo Claro
+            </button>
+            <span>Olá, <strong id="user-nome"></strong></span>
+            <a href="perfil.html" class="user-avatar-link">
+                <div class="user-avatar" id="user-avatar-char">U</div>
+            </a>
+            <button id="logout-button" class="cta-button small-button">Sair</button>
+        </div>
+    </header>
+
+    <main class="workout-plan">
+        <div class="history-container">
+            <h1>Seu Histórico de Treinos</h1>
+            <p id="achievement-status"></p>
+            <ul id="workout-history-list">
+                <p style="text-align: center;">Carregando histórico...</p>
+            </ul>
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2025 FitAdapt - Todos os direitos reservados</p>
+        <p>contato@fitadapt.com.br | (55) 83 9999-9999 </p>
+    </footer>
+
+    <script type="module">
+        import { auth, db } from './firebase-init.js';
+        import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js';
+        import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js';
+        import { workoutPlans } from './content-data.js';
+
+        // Função para carregar e exibir o histórico
+        async function displayWorkoutHistory(user) {
+            const historyList = document.getElementById('workout-history-list');
+            const achievementStatus = document.getElementById('achievement-status');
+            
+            historyList.innerHTML = '<p style="text-align: center;">Carregando histórico...</p>';
+            achievementStatus.textContent = ''; // Limpa o status de conquista para evitar duplicidade
+
+            const userDocRef = doc(db, "user_questionnaires", user.uid);
+            try {
+                const docSnap = await getDoc(userDocRef);
+                if (docSnap.exists()) {
+                    const userData = docSnap.data();
+                    // Verifica o campo correto. Use completedExercises se for o caso.
+                    const completedExercises = userData.completedExercises || [];
+
+                    const userObjective = userData.objetivo;
+                    let allExercises = [];
+                    if (userObjective && workoutPlans[userObjective]) {
+                        allExercises = workoutPlans[userObjective].flatMap(day => day.exercises);
+                    }
+
+                    // Lógica de "conquista" baseada no número de treinos
+                    if (completedExercises.length >= 10) {
+                        achievementStatus.textContent = '🏅 Parabéns, você concluiu 10 treinos ou mais!';
+                    } else if (completedExercises.length >= 5) {
+                        achievementStatus.textContent = '⭐ Você concluiu 5 treinos!';
+                    } else if (completedExercises.length >= 1) {
+                        achievementStatus.textContent = '👏 Você concluiu seu primeiro treino!';
+                    } else {
+                        achievementStatus.textContent = 'Nenhum treino concluído ainda.';
+                    }
+
+                    // Renderização da lista de treinos
+                    if (completedExercises.length === 0) {
+                        historyList.innerHTML = '<p style="text-align: center;">Vamos começar!</p>';
+                    } else {
+                        historyList.innerHTML = '';
+                        completedExercises.sort((a, b) => {
+                            const dateA = a.timestamp && typeof a.timestamp.toDate === 'function' ? a.timestamp.toDate() : new Date(0);
+                            const dateB = b.timestamp && typeof b.timestamp.toDate === 'function' ? b.timestamp.toDate() : new Date(0);
+                            return dateB - dateA;
+                        });
+                        
+                        completedExercises.forEach(historyItem => {
+                            if (historyItem && historyItem.idExercicio) {
+                                const exerciseDetails = allExercises.find(ex => ex.id === historyItem.idExercicio);
+                                
+                                if (exerciseDetails) {
+                                    const date = historyItem.timestamp.toDate();
+                                    const formattedDate = date.toLocaleDateString('pt-BR');
+                                    const formattedTime = date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                                    
+                                    const listItem = document.createElement('li');
+                                    listItem.innerHTML = `
+                                        <span class="icon">✅</span>
+                                        <span>**${formattedDate}** às ${formattedTime} - ${exerciseDetails.title}</span>
+                                    `;
+                                    historyList.appendChild(listItem);
+                                }
+                            }
+                        });
+                    }
+                } else {
+                    achievementStatus.textContent = 'Nenhum treino concluído ainda. Vamos começar!';
+                    historyList.innerHTML = '';
+                }
+            } catch (error) {
+                console.error("Erro ao carregar o histórico:", error);
+                achievementStatus.textContent = 'Ocorreu um erro ao carregar o histórico.';
+                historyList.innerHTML = '<p style="text-align: center; color: red;">Por favor, tente novamente.</p>';
+            }
+        }
+
+        // Lógica de autenticação e UI
+        onAuthStateChanged(auth, async (user) => {
+            const userNameElement = document.getElementById('user-nome');
+            const userAvatarCharElement = document.getElementById('user-avatar-char');
+
+            if (user) {
+                userNameElement.textContent = user.displayName || user.email.split('@')[0];
+                userAvatarCharElement.textContent = user.displayName ? user.displayName.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase();
+                displayWorkoutHistory(user);
+            } else {
+                window.location.href = 'login.html';
+            }
+        });
+
+        // Lógica de Logout
+        document.getElementById('logout-button').addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+            } catch (error) {
+                alert(`Erro ao fazer logout: ${error.message}`);
+            }
+        });
+
+        // Lógica do Dark Mode
+        function applyDarkModePreference() {
+            const isDarkMode = localStorage.getItem('dark-mode') === 'enabled';
+            if (isDarkMode) {
+                document.body.classList.add('dark-mode');
+                document.getElementById('dark-mode-toggle').innerHTML = '<span class="icon">🌙</span> Modo Escuro';
+            } else {
+                document.body.classList.remove('dark-mode');
+                document.getElementById('dark-mode-toggle').innerHTML = '<span class="icon">☀️</span> Modo Claro';
+            }
+        }
+        
+        document.getElementById('dark-mode-toggle').addEventListener('click', () => {
+            if (document.body.classList.contains('dark-mode')) {
+                localStorage.setItem('dark-mode', 'disabled');
+            } else {
+                localStorage.setItem('dark-mode', 'enabled');
+            }
+            applyDarkModePreference();
+        });
+
+        // Aplica a preferência de modo escuro ao carregar a página
+        document.addEventListener('DOMContentLoaded', applyDarkModePreference);
+    </script>
+</body>
+</html>

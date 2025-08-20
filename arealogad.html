@@ -145,8 +145,6 @@
             margin-bottom: 1rem;
         }
         
-        /* CORREÇÃO AQUI */
-        /* Alterações importantes para o parágrafo */
         .tip-card p {
             font-size: 1rem;
             color: #555;
@@ -154,7 +152,7 @@
             overflow: hidden;
             display: -webkit-box;
             -webkit-box-orient: vertical;
-            -webkit-line-clamp: 3; /* Limita o texto a 3 linhas */
+            -webkit-line-clamp: 3;
             text-overflow: ellipsis;
         }
 
@@ -217,6 +215,7 @@
                 <li><a href="arealogad.html">Meu Plano</a></li>
                 <li><a href="artigos.html">Artigos e Dicas</a></li>
                 <li><a href="meus-favoritos.html">Meus Favoritos</a></li>
+                <li><a href="historico.html">Histórico</a></li>
             </ul>
         </nav>
         <div class="user-info">
@@ -284,7 +283,7 @@
             <h2>🧘 Dicas de Recuperação</h2>
             <div class="carousel-container">
                 <div class="carousel-track" id="recovery-tips-track">
-                    </div>
+                </div>
                 <button class="carousel-nav-button prev-button" id="prev-tip-btn">‹</button>
                 <button class="carousel-nav-button next-button" id="next-tip-btn">›</button>
             </div>
@@ -310,7 +309,8 @@
         import { auth, db } from './firebase-init.js';
         // Importa módulos Firebase específicos necessários para esta página
         import { onAuthStateChanged, signOut, updateProfile } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js';
-        import { doc, getDoc, updateDoc, arrayUnion, arrayRemove } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js';
+        // CORREÇÃO: Importa `Timestamp` para salvar a data no formato correto.
+        import { doc, getDoc, updateDoc, arrayUnion, arrayRemove, Timestamp } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js';
 
         // Importa os planos de treino de content-data.js
         import { workoutPlans } from './content-data.js'; 
@@ -339,6 +339,7 @@
                 totalExercises += day.exercises.length;
             });
 
+            // CORREÇÃO: A contagem de exercícios concluídos agora é feita com base no novo formato de dados
             const completedExercises = userQuestionnaireData.completedExercises ? userQuestionnaireData.completedExercises.length : 0;
 
             let percentage = 0;
@@ -372,8 +373,10 @@
                 `;
                 return;
             }
-
-            const completedExercisesSet = new Set(userQuestionnaireData.completedExercises || []);
+            // CORREÇÃO: Cria um conjunto de IDs de exercícios concluídos para verificação rápida.
+            const completedExercisesSet = new Set(
+                (userQuestionnaireData.completedExercises || []).map(item => item.idExercicio)
+            );
 
             // Se filteredExercises for fornecido, usa-o. Caso contrário, usa todos os exercícios do plano.
             const exercisesToRender = filteredExercises !== null ? filteredExercises : planToDisplay.flatMap(day => day.exercises);
@@ -392,6 +395,7 @@
                 exerciseCard.classList.add('exercise-card');
                 const exerciseId = exercise.id; 
 
+                // CORREÇÃO: Verifica se o exercício está no conjunto de IDs concluídos.
                 const isCompleted = completedExercisesSet.has(exerciseId);
                 const isFavorited = userFavorites.includes(exerciseId);
                 
@@ -474,7 +478,7 @@
             displayWorkoutPlan(userQuestionnaireData); // Re-exibe o plano completo
         }
 
-        // Função que lida com o clique no botão "Marcar como concluído"
+        // FUNÇÃO CORRIGIDA: Lida com a marcação e desmarcação, salvando o timestamp no Firestore
         async function handleMarkAsDone(event) {
             const button = event.target;
             const exerciseId = button.dataset.exerciseId;
@@ -489,32 +493,40 @@
             try {
                 const docSnap = await getDoc(userQuestionnaireRef);
                 if (docSnap.exists()) {
-                    let currentCompleted = docSnap.data().completedExercises || [];
+                    const userData = docSnap.data();
+                    // CORREÇÃO: Pega a lista de exercícios concluídos do formato de objeto.
+                    const completedExercises = userData.completedExercises || [];
                     
-                    const isCompleted = currentCompleted.includes(exerciseId);
+                    // CORREÇÃO: Verifica se o exercício já está marcado como concluído.
+                    const isCompleted = completedExercises.some(item => item.idExercicio === exerciseId);
 
                     if (isCompleted) {
-                        await updateDoc(userQuestionnaireRef, {
-                            completedExercises: arrayRemove(exerciseId)
-                        });
-                        const index = currentCompleted.indexOf(exerciseId);
-                        if (index > -1) {
-                            currentCompleted.splice(index, 1);
+                        // CORREÇÃO: Encontra o objeto a ser removido. `arrayRemove` precisa do objeto exato.
+                        const itemToRemove = completedExercises.find(item => item.idExercicio === exerciseId);
+                        if (itemToRemove) {
+                            await updateDoc(userQuestionnaireRef, {
+                                completedExercises: arrayRemove(itemToRemove)
+                            });
                         }
-                        
+
                         button.textContent = 'Marcar como concluído';
                         button.classList.remove('completed');
                     } else {
+                        // CORREÇÃO: Adiciona um novo objeto com o ID do exercício e o timestamp.
                         await updateDoc(userQuestionnaireRef, {
-                            completedExercises: arrayUnion(exerciseId)
+                            completedExercises: arrayUnion({
+                                idExercicio: exerciseId,
+                                timestamp: Timestamp.now()
+                            })
                         });
-                        currentCompleted.push(exerciseId);
 
                         button.textContent = 'Concluído!';
                         button.classList.add('completed');
                     }
                     
-                    userQuestionnaireData.completedExercises = currentCompleted;
+                    // Atualiza a variável local para refletir a mudança no UI imediatamente
+                    const updatedDocSnap = await getDoc(userQuestionnaireRef);
+                    userQuestionnaireData = updatedDocSnap.data();
                     updateProgressDisplay();
                 }
             } catch (error) {
@@ -586,23 +598,23 @@
         const recoveryTips = [
             {
                 title: "Hidrate-se! 💧",
-                description: "Beba bastante água antes, durante e após o treino."
+                description: "Beba bastante água antes, durante e após o treino. A hidratação é crucial para a função muscular e a recuperação, ajudando a transportar nutrientes e remover resíduos."
             },
             {
                 title: "Priorize o Sono 😴",
-                description: "O sono é quando a maior parte da reparação muscular ocorre."
+                description: "O sono é quando a maior parte da reparação muscular ocorre. Tente dormir de 7 a 9 horas por noite para otimizar sua recuperação e desempenho."
             },
             {
                 title: "Nutrição Pós-Treino 🥗",
-                description: "Consuma uma combinação de proteínas e carboidratos logo após o treino."
+                description: "Consuma uma combinação de proteínas e carboidratos logo após o treino. A proteína ajuda a reparar os músculos, enquanto os carboidratos repõem as reservas de energia."
             },
             {
                 title: "Faça um Alongamento Leve 🤸",
-                description: "Um alongamento suave após o treino pode ajudar a reduzir a rigidez muscular e melhorar a flexibilidade."
+                description: "Um alongamento suave após o treino pode ajudar a reduzir a rigidez muscular e melhorar a flexibilidade. Não precisa ser intenso, apenas o suficiente para relaxar os músculos."
             },
             {
                 title: "Tome um Banho de Contraste 🚿",
-                description: "Alterne entre água quente e fria no chuveiro por alguns minutos."
+                description: "Alterne entre água quente e fria no chuveiro por alguns minutos. Isso pode ajudar a melhorar a circulação sanguínea e reduzir a inflamação muscular."
             }
         ];
 
@@ -626,16 +638,15 @@
             }
         }
 
-        // FUNÇÃO updateCarousel CORRIGIDA
         function updateCarousel() {
             if (recoveryTipsTrack && recoveryTipsTrack.querySelector('.tip-card')) {
                 const firstTipCard = recoveryTipsTrack.querySelector('.tip-card');
                 const cardWidth = firstTipCard.offsetWidth;
                 const cardStyle = window.getComputedStyle(firstTipCard);
                 const marginRight = parseFloat(cardStyle.marginRight);
-                const totalMargin = marginRight; // Sua margem horizontal total é 10px em cada lado, então apenas a margem da direita é suficiente no cálculo do carrossel. O browser já lida com a margem da esquerda no primeiro elemento.
+                const totalMargin = marginRight;
                 
-                const offset = -currentTipIndex * (cardWidth + totalMargin * 2); // Multiplicamos por 2 para a margem total entre dois cards
+                const offset = -currentTipIndex * (cardWidth + totalMargin * 2);
                 recoveryTipsTrack.style.transform = `translateX(${offset}px)`;
             }
         }
@@ -644,7 +655,7 @@
             if (currentTipIndex < recoveryTips.length - 1) {
                 currentTipIndex++;
             } else {
-                currentTipIndex = 0; // Volta para o início se chegar ao fim
+                currentTipIndex = 0; 
             }
             updateCarousel();
         }
@@ -653,7 +664,7 @@
             if (currentTipIndex > 0) {
                 currentTipIndex--;
             } else {
-                currentTipIndex = recoveryTips.length - 1; // Vai para o fim se chegar ao início
+                currentTipIndex = recoveryTips.length - 1; 
             }
             updateCarousel();
         }
