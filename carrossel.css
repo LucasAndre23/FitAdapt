@@ -1,0 +1,104 @@
+/* Estilos para a seção de Dicas de Recuperação */
+.recovery-tips-section {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    padding: 2.5rem;
+    margin-bottom: 2.5rem;
+    text-align: center;
+}
+
+.recovery-tips-section h2 {
+    color: #333;
+    margin-bottom: 1.5rem;
+}
+
+/* Container do Carrossel */
+.carousel-container {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+}
+
+/* Track do Carrossel - o container que se move */
+.carousel-track {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+}
+
+/* Estilo para cada card de dica no carrossel */
+.tip-card {
+    min-width: 100%; /* Mostra um card por vez */
+    box-sizing: border-box;
+    padding: 2rem;
+    background-color: #f0f4f8; /* Fundo levemente azul para destaque */
+    border-radius: 12px;
+    margin: 0 10px; /* Espaço entre os cards */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    flex-shrink: 0; /* Previne que os itens encolham */
+}
+
+.tip-card h3 {
+    font-size: 1.5rem;
+    color: #087234;
+    margin-bottom: 1rem;
+}
+
+.tip-card p {
+    font-size: 1rem;
+    color: #555;
+    line-height: 1.6;
+}
+
+/* Botões de navegação do carrossel */
+.carousel-nav-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    padding: 1rem;
+    cursor: pointer;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    z-index: 10;
+    transition: background-color 0.3s ease;
+}
+
+.carousel-nav-button:hover {
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.prev-button {
+    left: 10px;
+}
+
+.next-button {
+    right: 10px;
+}
+
+/* Estilos para o Dark Mode */
+body.dark-mode .recovery-tips-section {
+    background-color: #2e2e4a;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+body.dark-mode .recovery-tips-section h2 {
+    color: #e0e0e0;
+}
+
+body.dark-mode .tip-card {
+    background-color: #3a3a5e;
+}
+
+body.dark-mode .tip-card h3 {
+    color: #02fdd3;
+}
+
+body.dark-mode .tip-card p {
+    color: #c0c0c0;
+}

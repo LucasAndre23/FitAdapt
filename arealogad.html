@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Open+Sans:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+
     <style>
         /* Estilos adicionais para os filtros */
         .filters-section {
@@ -94,6 +95,118 @@
         body.dark-mode .filters-section button:hover {
             background-color: #5a5a7e;
         }
+
+        /* Estilos para a seção de Dicas de Recuperação */
+        .recovery-tips-section {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            padding: 2.5rem;
+            margin-bottom: 2.5rem;
+            text-align: center;
+        }
+
+        .recovery-tips-section h2 {
+            color: #333;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Container do Carrossel */
+        .carousel-container {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        /* Track do Carrossel - o container que se move */
+        .carousel-track {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        /* Estilo para cada card de dica no carrossel */
+        .tip-card {
+            min-width: 100%;
+            box-sizing: border-box;
+            padding: 2rem;
+            background-color: #f0f4f8;
+            border-radius: 12px;
+            margin: 0 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .tip-card h3 {
+            font-size: 1.5rem;
+            color: #087234;
+            margin-bottom: 1rem;
+        }
+        
+        /* CORREÇÃO AQUI */
+        /* Alterações importantes para o parágrafo */
+        .tip-card p {
+            font-size: 1rem;
+            color: #555;
+            line-height: 1.6;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 3; /* Limita o texto a 3 linhas */
+            text-overflow: ellipsis;
+        }
+
+        /* Botões de navegação do carrossel */
+        .carousel-nav-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            padding: 1rem;
+            cursor: pointer;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            z-index: 10;
+            transition: background-color 0.3s ease;
+        }
+
+        .carousel-nav-button:hover {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        .prev-button {
+            left: 10px;
+        }
+
+        .next-button {
+            right: 10px;
+        }
+
+        /* Estilos para o Dark Mode */
+        body.dark-mode .recovery-tips-section {
+            background-color: #2e2e4a;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        body.dark-mode .recovery-tips-section h2 {
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .tip-card {
+            background-color: #3a3a5e;
+        }
+
+        body.dark-mode .tip-card h3 {
+            color: #02fdd3;
+        }
+
+        body.dark-mode .tip-card p {
+            color: #c0c0c0;
+        }
     </style>
 </head>
 <body>
@@ -127,7 +240,6 @@
             <span id="progress-text" class="progress-text">Carregando Progresso...</span>
         </div>
 
-        <!-- Seção de Filtros para Treinos -->
         <section class="filters-section">
             <div class="filter-group">
                 <label for="filter-type">Tipo:</label>
@@ -136,7 +248,7 @@
                     <option value="Alongamento">Alongamento</option>
                     <option value="Mobilidade">Mobilidade</option>
                     <option value="Força">Força</option>
-                    <option value="Cardio">Cardio</option> <!-- <-- Certifique-se que está assim -->
+                    <option value="Cardio">Cardio</option>
                     <option value="Reabilitação">Reabilitação</option>
                 </select>
             </div>
@@ -166,6 +278,16 @@
             </div>
             <button id="apply-filters-btn">Aplicar Filtros</button>
             <button id="clear-filters-btn">Limpar Filtros</button>
+        </section>
+
+        <section class="recovery-tips-section">
+            <h2>🧘 Dicas de Recuperação</h2>
+            <div class="carousel-container">
+                <div class="carousel-track" id="recovery-tips-track">
+                    </div>
+                <button class="carousel-nav-button prev-button" id="prev-tip-btn">‹</button>
+                <button class="carousel-nav-button next-button" id="next-tip-btn">›</button>
+            </div>
         </section>
 
         <div class="articles-promo-card">
@@ -460,6 +582,82 @@
             applyDarkModePreference();
         }
 
+        // Lógica do Carrossel de Dicas de Recuperação
+        const recoveryTips = [
+            {
+                title: "Hidrate-se! 💧",
+                description: "Beba bastante água antes, durante e após o treino."
+            },
+            {
+                title: "Priorize o Sono 😴",
+                description: "O sono é quando a maior parte da reparação muscular ocorre."
+            },
+            {
+                title: "Nutrição Pós-Treino 🥗",
+                description: "Consuma uma combinação de proteínas e carboidratos logo após o treino."
+            },
+            {
+                title: "Faça um Alongamento Leve 🤸",
+                description: "Um alongamento suave após o treino pode ajudar a reduzir a rigidez muscular e melhorar a flexibilidade."
+            },
+            {
+                title: "Tome um Banho de Contraste 🚿",
+                description: "Alterne entre água quente e fria no chuveiro por alguns minutos."
+            }
+        ];
+
+        let currentTipIndex = 0;
+        const recoveryTipsTrack = document.getElementById('recovery-tips-track');
+        const prevBtn = document.getElementById('prev-tip-btn');
+        const nextBtn = document.getElementById('next-tip-btn');
+
+        function renderTips() {
+            if (recoveryTipsTrack) {
+                recoveryTipsTrack.innerHTML = '';
+                recoveryTips.forEach(tip => {
+                    const tipCard = document.createElement('div');
+                    tipCard.classList.add('tip-card');
+                    tipCard.innerHTML = `
+                        <h3>${tip.title}</h3>
+                        <p>${tip.description}</p>
+                    `;
+                    recoveryTipsTrack.appendChild(tipCard);
+                });
+            }
+        }
+
+        // FUNÇÃO updateCarousel CORRIGIDA
+        function updateCarousel() {
+            if (recoveryTipsTrack && recoveryTipsTrack.querySelector('.tip-card')) {
+                const firstTipCard = recoveryTipsTrack.querySelector('.tip-card');
+                const cardWidth = firstTipCard.offsetWidth;
+                const cardStyle = window.getComputedStyle(firstTipCard);
+                const marginRight = parseFloat(cardStyle.marginRight);
+                const totalMargin = marginRight; // Sua margem horizontal total é 10px em cada lado, então apenas a margem da direita é suficiente no cálculo do carrossel. O browser já lida com a margem da esquerda no primeiro elemento.
+                
+                const offset = -currentTipIndex * (cardWidth + totalMargin * 2); // Multiplicamos por 2 para a margem total entre dois cards
+                recoveryTipsTrack.style.transform = `translateX(${offset}px)`;
+            }
+        }
+        
+        function handleNextClick() {
+            if (currentTipIndex < recoveryTips.length - 1) {
+                currentTipIndex++;
+            } else {
+                currentTipIndex = 0; // Volta para o início se chegar ao fim
+            }
+            updateCarousel();
+        }
+
+        function handlePrevClick() {
+            if (currentTipIndex > 0) {
+                currentTipIndex--;
+            } else {
+                currentTipIndex = recoveryTips.length - 1; // Vai para o fim se chegar ao início
+            }
+            updateCarousel();
+        }
+
         // Verifica o estado de autenticação
         onAuthStateChanged(auth, async (user) => {
             if (user) {
@@ -516,6 +714,15 @@
         // Lógica de Logout
         document.addEventListener('DOMContentLoaded', () => {
             applyDarkModePreference(); 
+            renderTips();
+            updateCarousel(); // Posição inicial
+            
+            // Event Listeners para o carrossel
+            if(prevBtn && nextBtn) {
+                prevBtn.addEventListener('click', handlePrevClick);
+                nextBtn.addEventListener('click', handleNextClick);
+                window.addEventListener('resize', updateCarousel);
+            }
 
             const darkModeToggleButton = document.getElementById('dark-mode-toggle');
             if (darkModeToggleButton) {
